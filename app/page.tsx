@@ -70,7 +70,7 @@ export default function Home() {
 
           {/* Auth Buttons */}
           <div className="flex items-center gap-3">
-            <Link href="/signin">
+            <Link href="/guest/signIn">
               <Button
                 variant="ghost"
                 className="text-sky-700 hover:text-sky-800 hover:bg-sky-50 font-medium"
@@ -78,7 +78,7 @@ export default function Home() {
                 Sign In
               </Button>
             </Link>
-            <Link href="/signup">
+            <Link href="/guest/signUp">
               <Button className="bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 text-white shadow-md shadow-sky-200/50 hover:shadow-lg hover:shadow-sky-300/50 transition-all duration-300 font-semibold px-5">
                 Sign Up
               </Button>
@@ -122,7 +122,7 @@ export default function Home() {
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4">
-                <Link href="/signup">
+                <Link href="/guest/signIn">
                   <Button
                     size="lg"
                     className="bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white shadow-lg shadow-sky-200/50 hover:shadow-xl hover:shadow-sky-300/50 transition-all duration-300 font-semibold px-7 h-11 text-base rounded-xl"

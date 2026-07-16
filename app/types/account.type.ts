@@ -1,18 +1,19 @@
 export interface accountInterfaceInput {
     name: string,
-    type: string,
-    contact: string,
+    address: string,
     email: string,
-    subscriptionExpiration : string | null,
     password: string,
-    profile  :string,
-    isBan : boolean,
-    pin : string | null,
-    location?: {
-        lat?: number | null
-        long?: number | null
-    } | null
-
+    status :  string,
+    idImg : {
+        idFront  :  string,
+        idBack :  string,
+        idSelfie :  string,
+    },
+    skills : {
+        skill  :  string,
+        experience : number,
+        proficiency :  string,
+    }[]
 }
 
 export interface accountInterface extends accountInterfaceInput {

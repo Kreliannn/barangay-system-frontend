@@ -6,13 +6,15 @@ import useUserStore from "@/app/store/useUserStore";
 import { TestSideBar } from "@/components/ui/sidebar.template";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { SidebarResident } from "@/components/ui/sidebar_resident";
-
+import ResidentPending from "@/components/ui/residentPending";
+import ResidentRejected from "@/components/ui/residentRejected";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
 
     const {user} = useUserStore()
 
-    //if(user?.type != "admin" ) return <div> not auth </div>
+    if(user?.status == "pending" ) return <ResidentPending />
+    if(user?.status == "rejected" ) return <ResidentRejected />
 
     return (
       <div className="flex min-h-screen ">

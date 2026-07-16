@@ -19,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 const navigationItems = [
   { title: "Dashboard", url: "/pages/secretary/home", icon: Home },
+  { title: "Verify Resident", url: "/pages/secretary/verifyResident", icon: Home },
 ]
 
 const accountItems = [
