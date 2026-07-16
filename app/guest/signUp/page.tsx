@@ -32,6 +32,7 @@ export default function SignUpPage() {
   // Form fields
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
+  const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -93,6 +94,12 @@ export default function SignUpPage() {
       return;
     }
 
+
+    if (contact.length != 11) {
+      errorAlert("Contact Number invalid");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -102,6 +109,8 @@ export default function SignUpPage() {
       formData.append("email", email);
       formData.append("password", password);
       formData.append("status", "pending");
+      formData.append("contact", contact);
+      formData.append("profile", "/assets/profile.jpg");
       formData.append("idFront", idFront);
       formData.append("idBack", idBack);
       formData.append("idSelfie", idSelfie);
@@ -283,6 +292,31 @@ export default function SignUpPage() {
                     />
                   </div>
                 </div>
+
+                <div className="space-y-1.5">
+                    <Label htmlFor="contact" className="text-sm font-medium text-gray-700">
+                        Contact
+                    </Label>
+
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+
+                        <Input
+                        id="contact"
+                        type="text"
+                        placeholder="0909989785"
+                        value={contact}
+                        onChange={(e) => setContact(e.target.value)}
+                        className={`pl-10 h-10 transition-all ${
+                            contact.length === 11
+                            ? "border-green-500 focus:border-green-500 focus:ring-green-500/20"
+                            : "border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
+                        }`}
+                        required
+                        />
+                    </div>
+                </div>
+
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label htmlFor="address" className="text-sm font-medium text-gray-700">
                     Address

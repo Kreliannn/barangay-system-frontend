@@ -1,7 +1,9 @@
 export interface accountInterfaceInput {
+    profile : string,
     name: string,
     address: string,
     email: string,
+    contact: string,
     password: string,
     status :  string,
     idImg : {
