@@ -4,13 +4,30 @@ export const documentTypes = [
     price : 30,
     fields: [
       "fullName",
+      "civilStatus",
       "dateIssued",
-      "address",
-      "dateOfBirth",
-      "nationality",
-      "purpose",
     ],
     templateLocation: "/documents/barangayCertificate.pdf",
+  },
+  {
+    document: "certificateOfResidency",
+    price : 35,
+    fields: [
+      "fullName",
+      "address",
+      "civilStatus",
+      "dateIssued",
+    ],
+    templateLocation: "/documents/certificateOfResidency.pdf",
+  },
+  {
+    document: "certificateOfIndigency",
+    price : 30,
+    fields: [
+      "fullName",
+      "dateIssued",
+    ],
+    templateLocation: "/documents/certificateOfIdigency.pdf",
   },
   {
     document: "barangayClearance",
@@ -25,29 +42,6 @@ export const documentTypes = [
       "yrsOfResidency",
     ],
     templateLocation: "/documents/barangayClearance.pdf",
-  },
-  {
-    document: "certificateOfResidency",
-    price : 35,
-    fields: [
-      "fullName",
-      "address",
-      "yrsOfResidency",
-      "purpose",
-      "dateIssued",
-    ],
-    templateLocation: "/documents/certificateOfResidency.pdf",
-  },
-  {
-    document: "certificateOfIndigency",
-    price : 30,
-    fields: [
-      "fullName",
-      "address",
-      "purpose",
-      "dateIssued",
-    ],
-    templateLocation: "/documents/certificateOfIndigency.pdf",
   },
   {
     document: "certificateOfGoodMoralCharacter",

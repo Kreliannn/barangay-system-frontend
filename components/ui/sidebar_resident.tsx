@@ -17,11 +17,20 @@ import {
 } from "@/components/ui/sidebar"
 import { useQueryClient } from "@tanstack/react-query";
 
+import {
+ 
+ 
+  FolderOpen,
+ 
+  Wrench,
+} from "lucide-react"
+
 const navigationItems = [
   { title: "Dashboard", url: "/pages/resident/home", icon: Home },
-  { title: "Profile", url: "/pages/resident/profile", icon: Home },
-  { title: "My Documents", url: "/pages/resident/myDocuments", icon: ClipboardList },
+  { title: "Profile", url: "/pages/resident/profile", icon: User },
+  { title: "My Documents", url: "/pages/resident/myDocuments", icon: FolderOpen },
   { title: "Request Document", url: "/pages/resident/documentRequest", icon: FileText },
+  { title: "Resident Skills", url: "/pages/resident/residentSkills", icon: Wrench },
 ]
 
 const accountItems = [
@@ -174,7 +183,8 @@ export function SidebarResident({ className }: AppSidebarProps) {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
-                      className="text-sky-900 hover:text-white hover:bg-emerald-600 rounded-none border border-sky-100 hover:border-emerald-500 mx-2 transition-all duration-200 group [&_svg]:text-emerald-600 group-hover:[&_svg]:text-white [&_svg]:transition-colors [&_svg]:duration-200"
+                      /* CHANGED: Swapped group/group-hover flags out for direct hover:[&_svg]:text-white configuration */
+                      className="text-sky-900 hover:text-white hover:bg-emerald-600 rounded-none border border-sky-100 hover:border-emerald-500 mx-2 transition-all duration-200 [&_svg]:text-emerald-600 hover:[&_svg]:text-white [&_svg]:transition-colors [&_svg]:duration-200"
                     >
                       <Link href={item.url} className="tracking-[0.04em] font-light text-sm">
                         <item.icon />
@@ -196,7 +206,8 @@ export function SidebarResident({ className }: AppSidebarProps) {
                 <SidebarMenuButton
                   asChild
                   onClick={logoutHandler}
-                  className="text-slate-700 hover:text-white bg-white hover:bg-red-600 rounded-none border border-sky-100 hover:border-red-500 mx-2 transition-all duration-200 group [&_svg]:transition-colors [&_svg]:duration-200 group-hover:[&_svg]:text-white [&_svg]:text-red-500"
+                  /* CHANGED: Fixed identical issue here for logout button styling */
+                  className="text-slate-700 hover:text-white bg-white hover:bg-red-600 rounded-none border border-sky-100 hover:border-red-500 mx-2 transition-all duration-200 [&_svg]:transition-colors [&_svg]:duration-200 hover:[&_svg]:text-white [&_svg]:text-red-500"
                 >
                   <Link href={item.url} className="tracking-[0.04em] font-light text-sm">
                     <item.icon />

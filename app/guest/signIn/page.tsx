@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/app/utils/axios";
 import useUserStore from "@/app/store/useUserStore";
-import { errorAlert, successAlert } from "@/app/utils/alert";
+import { errorAlert } from "@/app/utils/alert";
 import {
   LogIn,
   Mail,
@@ -38,8 +38,8 @@ export default function SignInPage() {
 
     // Hardcoded secretary bypass
     if (email === "secretary@gmail.com" && password === "123") {
-      successAlert("Welcome, Secretary!");
-      setTimeout(() => router.push("/pages/secretary/home"), 800);
+      setLoading(true);
+      router.push("/pages/secretary/home");
       return;
     }
 
@@ -55,13 +55,12 @@ export default function SignInPage() {
       // Store user data in zustand persist store (saved to localStorage)
       setUser(account);
 
-      successAlert("Welcome back!");
-      setTimeout(() => router.push("/pages/resident/home"), 800);
+      // Navigate immediately — button stays in loading state until component unmounts
+      router.push("/pages/resident/home");
     } catch (err: any) {
       const message =
         err?.response?.data || err?.message || "Login failed";
       errorAlert(typeof message === "string" ? message : "Login failed");
-    } finally {
       setLoading(false);
     }
   };

@@ -13,6 +13,40 @@ const DOCUMENT_NAMES: Record<string, string> = {
 };
 
 /**
+ * Converts a YYYY-MM-DD date string to a formatted date like "17th day of July, 2026".
+ * Returns the original string if parsing fails.
+ */
+function formatDateIssued(dateStr: string): string {
+  if (!dateStr) return dateStr;
+
+  const parts = dateStr.split("-");
+  if (parts.length !== 3) return dateStr;
+
+  const year = parts[0];
+  const month = parseInt(parts[1], 10);
+  const day = parseInt(parts[2], 10);
+
+  if (isNaN(month) || isNaN(day)) return dateStr;
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+  ];
+  const monthName = monthNames[month - 1];
+  if (!monthName) return dateStr;
+
+  // Determine ordinal suffix
+  const suffix =
+    day >= 11 && day <= 13 ? "th"
+    : day % 10 === 1 ? "st"
+    : day % 10 === 2 ? "nd"
+    : day % 10 === 3 ? "rd"
+    : "th";
+
+  return `${day}${suffix} day of ${monthName}, ${year}`;
+}
+
+/**
  * Generates and downloads a filled PDF document based on the document request data.
  * Uses the PDF template specified in documentTypes and fills form fields
  * that match the document request field names.
@@ -46,8 +80,12 @@ export async function generateDocumentPDF(doc: documentRequestInterface): Promis
     // Fill fields — try each field from the document type, using the request data
     for (const fieldKey of docType.fields) {
       try {
-        const value = (doc as any)[fieldKey];
+        let value = (doc as any)[fieldKey];
         if (value !== null && value !== undefined && value !== "") {
+          // Format dateIssued from YYYY-MM-DD to "17th day of July, 2026"
+          if (fieldKey === "dateIssued") {
+            value = formatDateIssued(value);
+          }
           const textField = form.getTextField(fieldKey);
           textField.setText(String(value));
         }

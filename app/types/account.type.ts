@@ -15,7 +15,17 @@ export interface accountInterfaceInput {
         skill  :  string,
         experience : number,
         proficiency :  string,
-    }[]
+    }[],
+    reviews : {
+        _id? : string,
+        user :   string,
+        userProfile : string,
+        star  :  number,
+        skill :  string,
+        message :  string,
+    }[],
+    averageRating? : number,
+    totalReviews? : number,
 }
 
 export interface accountInterface extends accountInterfaceInput {

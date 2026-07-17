@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { Calendar, Home, Building, Search, UserPlus2, User, FileText, BarChart3, Building2, LogOut, Menu, X, MenuIcon, Receipt, Recycle, Activity, History } from "lucide-react"
+import { Home, UserPlus2, FileText, Award, LogOut, Menu, X, History } from "lucide-react"
 import { useState } from "react"
 import {
   Sidebar,
@@ -22,6 +22,7 @@ const navigationItems = [
   { title: "Verify Resident", url: "/pages/secretary/verifyResident", icon: UserPlus2 },
   { title: "Document Requests", url: "/pages/secretary/documentRequest", icon: FileText },
   { title: "Request History", url: "/pages/secretary/requestHistory", icon: History },
+  { title: "Resident Skills", url: "/pages/secretary/residentSkills", icon: Award },
 ]
 
 const accountItems = [
@@ -37,6 +38,15 @@ export function SidebarSecretary({ className }: AppSidebarProps) {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen)
   const closeMobileMenu = () => setIsMobileMenuOpen(false)
   const queryClient = useQueryClient();
+
+  // Track which row is hovered so only that row's icon turns white.
+  // (Avoids dynamically-built Tailwind class names like `group/nav-${idx}`,
+  // which Tailwind's compiler can't statically detect and therefore never
+  // generates CSS for.)
+  const [hoveredMobileNav, setHoveredMobileNav] = useState<number | null>(null)
+  const [hoveredDesktopNav, setHoveredDesktopNav] = useState<number | null>(null)
+  const [hoveredMobileLogout, setHoveredMobileLogout] = useState(false)
+  const [hoveredDesktopLogout, setHoveredDesktopLogout] = useState(false)
 
   const logoutHandler = async () => {
     queryClient.clear();
@@ -94,14 +104,19 @@ export function SidebarSecretary({ className }: AppSidebarProps) {
                   Section
                 </p>
                 <nav className="space-y-1">
-                  {navigationItems.map((item) => (
+                  {navigationItems.map((item, idx) => (
                     <Link
                       key={item.title}
                       href={item.url}
                       onClick={closeMobileMenu}
-                      className="flex items-center gap-3 px-3 py-2.5 text-sky-950 hover:text-white bg-white hover:bg-emerald-600 border border-sky-100 hover:border-emerald-500 transition-all duration-200 group"
+                      onMouseEnter={() => setHoveredMobileNav(idx)}
+                      onMouseLeave={() => setHoveredMobileNav(null)}
+                      className="flex items-center gap-3 px-3 py-2.5 text-sky-950 hover:text-white bg-white hover:bg-emerald-600 border border-sky-100 hover:border-emerald-500 transition-all duration-200"
                     >
-                      <item.icon size={16} className="text-emerald-600 group-hover:text-white transition-colors duration-200" />
+                      <item.icon
+                        size={16}
+                        className={`transition-colors duration-200 ${hoveredMobileNav === idx ? "text-white" : "text-emerald-600"}`}
+                      />
                       <span className="text-sm tracking-[0.06em] font-light">{item.title}</span>
                     </Link>
                   ))}
@@ -118,9 +133,14 @@ export function SidebarSecretary({ className }: AppSidebarProps) {
                       closeMobileMenu();
                       logoutHandler();
                     }}
-                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:text-white bg-white hover:bg-red-600 border border-sky-100 hover:border-red-500 transition-all duration-200 group"
+                    onMouseEnter={() => setHoveredMobileLogout(true)}
+                    onMouseLeave={() => setHoveredMobileLogout(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 text-slate-700 hover:text-white bg-white hover:bg-red-600 border border-sky-100 hover:border-red-500 transition-all duration-200"
                   >
-                    <item.icon size={16} className="text-red-500 group-hover:text-white transition-colors duration-200" />
+                    <item.icon
+                      size={16}
+                      className={`transition-colors duration-200 ${hoveredMobileLogout ? "text-white" : "text-red-500"}`}
+                    />
                     <span className="text-sm tracking-[0.06em] font-light">{item.title}</span>
                   </Link>
                 ))}
@@ -170,14 +190,18 @@ export function SidebarSecretary({ className }: AppSidebarProps) {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {navigationItems.map((item) => (
+                {navigationItems.map((item, idx) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
-                      className="text-sky-900 hover:text-white  hover:bg-emerald-600 rounded-none border border-sky-100 hover:border-emerald-500 mx-2 transition-all duration-200 group [&_svg]:text-emerald-600 group-hover:[&_svg]:text-white [&_svg]:transition-colors [&_svg]:duration-200"
+                      onMouseEnter={() => setHoveredDesktopNav(idx)}
+                      onMouseLeave={() => setHoveredDesktopNav(null)}
+                      className="text-sky-900 hover:text-white hover:bg-emerald-600 rounded-none border border-sky-100 hover:border-emerald-500 mx-2 transition-all duration-200"
                     >
                       <Link href={item.url} className="tracking-[0.04em] font-light text-sm">
-                        <item.icon />
+                        <item.icon
+                          className={`transition-colors duration-200 ${hoveredDesktopNav === idx ? "text-white" : "text-emerald-600"}`}
+                        />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -196,11 +220,15 @@ export function SidebarSecretary({ className }: AppSidebarProps) {
                 <SidebarMenuButton
                   asChild
                   onClick={logoutHandler}
-                  className="text-slate-700 hover:text-white bg-white hover:bg-red-600 rounded-none border border-sky-100 hover:border-red-500 mx-2 transition-all duration-200 group [&_svg]:transition-colors [&_svg]:duration-200 group-hover:[&_svg]:text-white [&_svg]:text-red-500"
+                  onMouseEnter={() => setHoveredDesktopLogout(true)}
+                  onMouseLeave={() => setHoveredDesktopLogout(false)}
+                  className="text-slate-700 hover:text-white bg-white hover:bg-red-100 rounded-none border border-sky-100 hover:border-red-200 mx-2 transition-all duration-200"
                 >
                   <Link href={item.url} className="tracking-[0.04em] font-light text-sm">
-                    <item.icon />
-                    <span>{item.title}</span>
+                    <item.icon
+                      className={`transition-colors duration-200 ${hoveredDesktopLogout ? "text-red-500" : "text-red-500"}`}
+                    />
+                    <span className={`transition-colors duration-200 ${hoveredDesktopLogout ? "text-red-500" : "text-red-500"}`}>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
