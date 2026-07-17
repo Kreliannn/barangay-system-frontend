@@ -1,6 +1,7 @@
 export const documentTypes = [
   {
     document: "barangayCertificate",
+    price : 30,
     fields: [
       "fullName",
       "dateIssued",
@@ -10,10 +11,11 @@ export const documentTypes = [
       "purpose",
     ],
     templateLocation: "/documents/barangayCertificate.pdf",
-    templateLocationSign: "/documents/barangayClearance.pdf",
+    templateLocationSign: "/documents/barangayCertificateSign.pdf",
   },
   {
     document: "barangayClearance",
+    price : 40,
     fields: [
       "fullName",
       "dateIssued",
@@ -28,6 +30,7 @@ export const documentTypes = [
   },
   {
     document: "certificateOfResidency",
+    price : 35,
     fields: [
       "fullName",
       "address",
@@ -36,10 +39,11 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/certificateOfResidency.pdf",
-    templateLocationSign: "/documents/barangayClearance.pdf",
+    templateLocationSign: "",
   },
   {
     document: "certificateOfIndigency",
+    price : 30,
     fields: [
       "fullName",
       "address",
@@ -47,10 +51,11 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/certificateOfIndigency.pdf",
-    templateLocationSign: "/documents/barangayClearance.pdf",
+    templateLocationSign: "",
   },
   {
     document: "certificateOfGoodMoralCharacter",
+    price : 60,
     fields: [
       "fullName",
       "address",
@@ -58,10 +63,11 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/certificateOfGoodMoralCharacter.pdf",
-    templateLocationSign: "/documents/barangayClearance.pdf",
+    templateLocationSign: "",
   },
   {
     document: "certificateOfUnemployment",
+    price : 45,
     fields: [
       "fullName",
       "address",
@@ -70,10 +76,11 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/certificateOfUnemployment.pdf",
-    templateLocationSign: "/documents/barangayClearance.pdf",
+    templateLocationSign: "",
   },
   {
     document: "barangayBusinessClearance",
+    price : 80,
     fields: [
       "fullName",
       "businessName",
@@ -84,6 +91,6 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/barangayBusinessClearance.pdf",
-    templateLocationSign: "/documents/barangayClearance.pdf",
+    templateLocationSign: "",
   },
 ];
