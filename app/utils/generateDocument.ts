@@ -24,7 +24,7 @@ export async function generateDocumentPDF(doc: documentRequestInterface): Promis
     return;
   }
 
-  const templatePath = docType.templateLocationSign;
+  const templatePath = docType.templateLocation;
   if (!templatePath) {
     console.error(`No template found for: ${doc.document}`);
     return;

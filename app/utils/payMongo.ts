@@ -1,8 +1,7 @@
-export async function payMongoBooking(
+export async function payMongoPayment(
   amountInput: string,
   sender: string,
-  receiver: string,
-  bookingId: string
+  documentId: string
 ) {
   const amount = parseInt(amountInput, 10) * 100;
 
@@ -22,8 +21,7 @@ export async function payMongoBooking(
       body: JSON.stringify({
         amount,
         sender,
-        receiver,
-        bookingId,
+        documentId,
         referenceId,
       }),
     });

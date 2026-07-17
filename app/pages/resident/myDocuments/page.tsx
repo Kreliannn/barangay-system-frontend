@@ -6,6 +6,7 @@ import axiosInstance from "@/app/utils/axios";
 import useUserStore from "@/app/store/useUserStore";
 import { documentRequestInterface } from "@/app/types/documentRequest";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -25,7 +26,11 @@ import {
   ClipboardList,
   CalendarDays,
   Inbox,
+  PhilippinePeso, Wallet
 } from "lucide-react";
+import { confirmAlert } from "@/app/utils/alert";
+import { getDocumentPrice } from "@/app/utils/documents";
+import { payMongoPayment } from "@/app/utils/payMongo";
 
 // ─── Status config ───────────────────────────────────────────────
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ElementType; bg: string; text: string; border: string }> = {
@@ -111,6 +116,14 @@ export default function MyDocumentsPage() {
     );
   });
 
+
+
+  const handlePayment = (amountInput : string, sender : string, documentId : string ) => {
+    confirmAlert("you want to pay online?", "pay", () => {
+      payMongoPayment(amountInput, sender, documentId)
+    })
+  }
+
   return (
     <div className="w-full min-h-dvh p-4 sm:p-6 space-y-6">
       {/* ── Header ── */}
@@ -150,8 +163,10 @@ export default function MyDocumentsPage() {
           <TableHeader>
             <TableRow className="bg-gray-50/80">
               <TableHead className="font-semibold text-gray-700">Document Type</TableHead>
+              <TableHead className="font-semibold text-gray-700">Price</TableHead>
               <TableHead className="font-semibold text-gray-700 hidden sm:table-cell">Date Requested</TableHead>
               <TableHead className="font-semibold text-gray-700">Status</TableHead>
+               <TableHead className="font-semibold text-gray-700">Paid</TableHead>
               <TableHead className="font-semibold text-gray-700 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -204,6 +219,12 @@ export default function MyDocumentsPage() {
                         {DOCUMENT_NAMES[doc.document] || doc.document}
                       </div>
                     </TableCell>
+                      <TableCell className="text-green-600 hidden sm:table-cell">
+                      <div className="flex items-center gap-1.5">
+                        <PhilippinePeso className="size-3.5 text-green-400 shrink-0" />
+                        {getDocumentPrice(doc.document)}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-gray-600 hidden sm:table-cell">
                       <div className="flex items-center gap-1.5">
                         <CalendarDays className="size-3.5 text-gray-400 shrink-0" />
@@ -220,8 +241,30 @@ export default function MyDocumentsPage() {
                         {statusCfg.label}
                       </span>
                     </TableCell>
+
+                     <TableCell>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                          doc.isPaid
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : "bg-rose-50 text-rose-700 border-rose-200"
+                        }`}
+                      >
+                        <Wallet className="size-3" />
+                        {doc.isPaid ? "Paid" : "Unpaid"}
+                      </span>
+                    </TableCell>
+
                     <TableCell className="text-right">
-                      {/* Actions placeholder — will be filled later */}
+                      
+                      {!doc.isPaid && (
+                        <Button onClick={() => handlePayment(getDocumentPrice(doc.document).toString(), doc.resident._id, doc._id)}>
+                          Payment
+                        </Button>
+                      )}
+                     
+
+
                     </TableCell>
                   </TableRow>
                 );

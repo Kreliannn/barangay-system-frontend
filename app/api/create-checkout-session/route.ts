@@ -9,7 +9,7 @@ function getAuthHeader() {
 
 export async function POST(req: Request) {
   try {
-    const { amount, sender, receiver, bookingId, referenceId } = await req.json();
+    const { amount, sender, documentId, referenceId } = await req.json();
 
     const body = JSON.stringify({
       data: {
@@ -24,9 +24,9 @@ export async function POST(req: Request) {
             },
           ],
           payment_method_types: ['gcash'],
-          description: `Booking payment from ${sender} to ${receiver}`,
-          success_url: `${process.env.NEXT_PUBLIC_BASE_URL_LIVE}/receipts/clientPayment?sender=${sender}&receiver=${receiver}&bookingId=${bookingId}&amount=${amount / 100}&refId=${referenceId}`,
-          cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL_LIVE}/pages/client/posts`,
+          description: `Booking payment from ${sender} `,
+          success_url: `${process.env.NEXT_PUBLIC_BASE_URL_LIVE}/pages/resident/receipt?sender=${sender}&documentId=${documentId}&amount=${amount / 100}&refId=${referenceId}`,
+          cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL_LIVE}/pages/resident/myDocuments`,
           reference_number: referenceId,
         },
       },

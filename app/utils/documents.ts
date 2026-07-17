@@ -11,7 +11,6 @@ export const documentTypes = [
       "purpose",
     ],
     templateLocation: "/documents/barangayCertificate.pdf",
-    templateLocationSign: "/documents/barangayCertificateSign.pdf",
   },
   {
     document: "barangayClearance",
@@ -26,7 +25,6 @@ export const documentTypes = [
       "yrsOfResidency",
     ],
     templateLocation: "/documents/barangayClearance.pdf",
-    templateLocationSign: "/documents/barangayClearanceSign.pdf",
   },
   {
     document: "certificateOfResidency",
@@ -39,7 +37,6 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/certificateOfResidency.pdf",
-    templateLocationSign: "",
   },
   {
     document: "certificateOfIndigency",
@@ -51,7 +48,6 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/certificateOfIndigency.pdf",
-    templateLocationSign: "",
   },
   {
     document: "certificateOfGoodMoralCharacter",
@@ -63,7 +59,6 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/certificateOfGoodMoralCharacter.pdf",
-    templateLocationSign: "",
   },
   {
     document: "certificateOfUnemployment",
@@ -76,7 +71,6 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/certificateOfUnemployment.pdf",
-    templateLocationSign: "",
   },
   {
     document: "barangayBusinessClearance",
@@ -91,6 +85,13 @@ export const documentTypes = [
       "dateIssued",
     ],
     templateLocation: "/documents/barangayBusinessClearance.pdf",
-    templateLocationSign: "",
   },
 ];
+
+export const getDocumentPrice = (document: string) => {
+  const doc = documentTypes.find(
+    (item) => item.document === document
+  );
+
+  return doc?.price ?? 0;
+};
