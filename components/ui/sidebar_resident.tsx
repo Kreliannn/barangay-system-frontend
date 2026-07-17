@@ -21,7 +21,7 @@ import {
  
  
   FolderOpen,
- 
+ ActivityIcon,
   Wrench,
 } from "lucide-react"
 
@@ -31,6 +31,7 @@ const navigationItems = [
   { title: "My Documents", url: "/pages/resident/myDocuments", icon: FolderOpen },
   { title: "Request Document", url: "/pages/resident/documentRequest", icon: FileText },
   { title: "Resident Skills", url: "/pages/resident/residentSkills", icon: Wrench },
+    { title: "Activity", url: "/pages/resident/activity", icon: ActivityIcon },
 ]
 
 const accountItems = [

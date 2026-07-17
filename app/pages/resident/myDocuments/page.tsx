@@ -26,11 +26,15 @@ import {
   ClipboardList,
   CalendarDays,
   Inbox,
-  PhilippinePeso, Wallet
+  PhilippinePeso,
+  Wallet,
+  CreditCard,
+  Download,
 } from "lucide-react";
 import { confirmAlert } from "@/app/utils/alert";
 import { getDocumentPrice } from "@/app/utils/documents";
 import { payMongoPayment } from "@/app/utils/payMongo";
+import { generateDocumentPDF } from "@/app/utils/generateDocument";
 
 // ─── Status config ───────────────────────────────────────────────
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ElementType; bg: string; text: string; border: string }> = {
@@ -182,7 +186,7 @@ export default function MyDocumentsPage() {
               ))
             ) : !documents || documents.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-16">
+                <TableCell colSpan={6} className="text-center py-16">
                   <div className="flex flex-col items-center gap-3 text-gray-400">
                     <Inbox className="size-10" />
                     <p className="text-sm font-medium">No document requests yet</p>
@@ -194,7 +198,7 @@ export default function MyDocumentsPage() {
               </TableRow>
             ) : filtered?.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-12">
+                <TableCell colSpan={6} className="text-center py-12">
                   <div className="flex flex-col items-center gap-2 text-gray-400">
                     <Search className="size-8" />
                     <p className="text-sm font-medium">No results match your search</p>
@@ -256,15 +260,33 @@ export default function MyDocumentsPage() {
                     </TableCell>
 
                     <TableCell className="text-right">
-                      
-                      {!doc.isPaid && (
-                        <Button onClick={() => handlePayment(getDocumentPrice(doc.document).toString(), doc.resident._id, doc._id)}>
-                          Payment
-                        </Button>
-                      )}
-                     
-
-
+                      <div className="flex items-center justify-end gap-1">
+                        {doc.isPaid ? (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => generateDocumentPDF(doc)}
+                            className="size-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                            title="Download PDF"
+                          >
+                            <Download className="size-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handlePayment(
+                              getDocumentPrice(doc.document).toString(),
+                              doc.resident._id,
+                              doc._id
+                            )}
+                            className="size-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                            title="Pay now"
+                          >
+                            <CreditCard className="size-4" />
+                          </Button>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
