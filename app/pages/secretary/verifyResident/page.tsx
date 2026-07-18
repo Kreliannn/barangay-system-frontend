@@ -38,6 +38,9 @@ import {
   ShieldCheck,
   ShieldX,
   X,
+  CalendarDays,
+  Heart,
+  Vote,
 } from "lucide-react";
 
 interface IdImg {
@@ -51,8 +54,14 @@ interface Account {
   name: string;
   address: string;
   email: string;
+  contact: string;
   status: string;
   idImg: IdImg;
+  gender: string;
+  dateOfBirth: string;
+  civilStatus: string;
+  purok: string;
+  voterStatus: string;
 }
 
 export default function VerifyResidentPage() {
@@ -298,6 +307,41 @@ export default function VerifyResidentPage() {
                     <p className="text-sm text-gray-800">
                       {selectedAccount.address}
                     </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <UserRound className="size-4 text-sky-500 mt-0.5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Gender</p>
+                    <p className="text-sm text-gray-800 capitalize">{selectedAccount.gender || "Not set"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <CalendarDays className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Date of Birth</p>
+                    <p className="text-sm text-gray-800">{selectedAccount.dateOfBirth ? new Date(selectedAccount.dateOfBirth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "Not set"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <Heart className="size-4 text-rose-500 mt-0.5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Civil Status</p>
+                    <p className="text-sm text-gray-800">{selectedAccount.civilStatus || "Not set"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <MapPin className="size-4 text-amber-500 mt-0.5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Purok</p>
+                    <p className="text-sm text-gray-800">{selectedAccount.purok || "Not set"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                  <Vote className="size-4 text-violet-500 mt-0.5 shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Voter Status</p>
+                    <p className="text-sm text-gray-800">{selectedAccount.voterStatus || "Not set"}</p>
                   </div>
                 </div>
               </div>

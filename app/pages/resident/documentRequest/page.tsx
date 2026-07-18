@@ -36,6 +36,7 @@ import {
   ArrowLeft,
   Send,
 } from "lucide-react";
+import { getDocumentPrice } from "@/app/utils/documents";
 
 // ─── Field metadata ───────────────────────────────────────────────
 interface FieldConfig {
@@ -227,6 +228,8 @@ export default function DocumentRequestPage() {
       fullName: user?.name || "",
       address: user?.address || "",
       contact: user?.contact || "",
+      dateOfBirth: user?.dateOfBirth || "",
+      civilStatus: user?.civilStatus || "",
     });
     setStep("form");
   };
@@ -248,6 +251,7 @@ export default function DocumentRequestPage() {
     const payload: any = {
       resident: user?._id || "",
       document: selectedDocument || "",
+      price : getDocumentPrice(selectedDocument!),
       status: "pending",
       isPaid: false,
       fullName: null,
@@ -260,7 +264,7 @@ export default function DocumentRequestPage() {
       yrsOfResidency: null,
       purpose: null,
       documentNumber: null,
-      dateIssued: null,
+      dateIssued: new Date().toISOString().split("T")[0],
       businessName: null,
       businessAddress: null,
       businessType: null,
@@ -499,7 +503,9 @@ export default function DocumentRequestPage() {
 
                 <div className="p-5 space-y-4">
                   {currentDocFields.length > 0 ? (
-                    currentDocFields.map((fieldKey) => renderField(fieldKey))
+                    currentDocFields
+                      .filter((fk) => fk !== "dateIssued")
+                      .map((fieldKey) => renderField(fieldKey))
                   ) : (
                     <div className="text-center py-8 text-slate-400 text-sm">
                       No additional fields required for this document.

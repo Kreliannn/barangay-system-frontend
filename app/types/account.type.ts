@@ -6,6 +6,14 @@ export interface accountInterfaceInput {
     contact: string,
     password: string,
     status :  string,
+
+    gender: string,
+    dateOfBirth: string,
+    civilStatus: string,
+    purok: string,
+    voterStatus: string,
+    houseHoldNumber: string,
+
     idImg : {
         idFront  :  string,
         idBack :  string,

@@ -6,7 +6,7 @@ import axiosInstance from "@/app/utils/axios";
 import { documentRequestInterface } from "@/app/types/documentRequest";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
+import { 
   Table,
   TableBody,
   TableCell,
@@ -91,6 +91,87 @@ export default function SecretaryDocumentRequestsPage() {
     },
   });
 
+  // ── Fetch completed count for stats ───────────────────────────
+  const { data: completedDocs, isLoading: completedLoading } = useQuery<documentRequestInterface[]>({
+    queryKey: ["document-requests", "secretary", "completed"],
+    queryFn: async () => {
+      const res = await axiosInstance.get("/document-request", {
+        params: { status: "completed" },
+      });
+      return res.data;
+    },
+  });
+
+  // ── Compute stats ─────────────────────────────────────────────
+  const stats = {
+    total: documents?.length || 0,
+    pending: documents?.filter((d) => d.status === "pending").length || 0,
+    processing: documents?.filter((d) => d.status === "processing").length || 0,
+    toClaim: documents?.filter((d) => d.status === "to claim").length || 0,
+    unpaid: documents?.filter((d) => !d.isPaid).length || 0,
+    paid: documents?.filter((d) => d.isPaid).length || 0,
+    completed: completedDocs?.length || 0,
+  };
+
+  // ── Stats card configs ────────────────────────────────────────
+  const STATS_CARDS = [
+    {
+      label: "Active Requests",
+      value: stats.total,
+      icon: ClipboardList,
+      bg: "bg-sky-50",
+      text: "text-sky-700",
+      iconBg: "bg-sky-100",
+      iconColor: "text-sky-600",
+    },
+    {
+      label: "Pending",
+      value: stats.pending,
+      icon: Clock,
+      bg: "bg-amber-50",
+      text: "text-amber-700",
+      iconBg: "bg-amber-100",
+      iconColor: "text-amber-600",
+    },
+    {
+      label: "Processing",
+      value: stats.processing,
+      icon: Loader2,
+      bg: "bg-sky-50",
+      text: "text-sky-700",
+      iconBg: "bg-sky-100",
+      iconColor: "text-sky-600",
+    },
+    {
+      label: "To Claim",
+      value: stats.toClaim,
+      icon: FileCheck,
+      bg: "bg-violet-50",
+      text: "text-violet-700",
+      iconBg: "bg-violet-100",
+      iconColor: "text-violet-600",
+    },
+    {
+      label: "Unpaid",
+      value: stats.unpaid,
+      icon: Wallet,
+      bg: "bg-rose-50",
+      text: "text-rose-700",
+      iconBg: "bg-rose-100",
+      iconColor: "text-rose-600",
+    },
+    {
+      label: "Paid",
+      value: stats.paid,
+      icon: Receipt,
+      bg: "bg-emerald-50",
+      text: "text-emerald-700",
+      iconBg: "bg-emerald-100",
+      iconColor: "text-emerald-600",
+    },
+   
+  ];
+
   // ── Filter by search ──────────────────────────────────────────
   const filtered = documents?.filter((doc) => {
     if (!search) return true;
@@ -107,22 +188,44 @@ export default function SecretaryDocumentRequestsPage() {
   return (
     <div className="w-full min-h-dvh p-4 sm:p-6 space-y-6">
       {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+      <div>
+        <div className="flex items-center justify-between mb-2">
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <ClipboardList className="size-6 text-sky-600" />
             Document Requests
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage and process resident document requests
-          </p>
         </div>
-        <div className="flex items-center gap-3 text-sm text-gray-500 bg-sky-50 rounded-xl px-4 py-2 border border-sky-100">
-          <FileText className="size-4 text-sky-500" />
-          <span>
-            Active:{" "}
-            <strong className="text-sky-700">{documents?.length || 0}</strong>
-          </span>
+        <p className="text-sm text-gray-500 mb-5">
+          Manage and process resident document requests
+        </p>
+
+        {/* ── Stats Cards ── */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          {STATS_CARDS.map((card) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={card.label}
+                className={`${card.bg} rounded-xl border border-transparent hover:border-gray-200 p-4 transition-all duration-200 hover:shadow-sm`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`size-9 rounded-lg ${card.iconBg} flex items-center justify-center`}>
+                    <Icon className={`size-4 ${card.iconColor}`} />
+                  </div>
+                  <div>
+                    <p className={`text-lg font-bold ${card.text}`}>
+                      {(isLoading || (card.label === "Completed" && completedLoading))
+                        ? "—"
+                        : card.value}
+                    </p>
+                    <p className={`text-[11px] font-medium ${card.text} opacity-70`}>
+                      {card.label}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -256,7 +359,7 @@ export default function SecretaryDocumentRequestsPage() {
                           className="h-7 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                         >
                           <Download className="size-3" />
-                          PDF
+                          Document
                         </Button>
                         <Button
                           variant="ghost"

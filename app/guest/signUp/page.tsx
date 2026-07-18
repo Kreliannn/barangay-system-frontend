@@ -22,6 +22,12 @@ import {
   Loader2,
   Eye,
   EyeOff,
+  CalendarDays,
+  Users,
+  Hash,
+  Heart,
+  Vote,
+  
 } from "lucide-react";
 
 export default function SignUpPage() {
@@ -35,6 +41,14 @@ export default function SignUpPage() {
   const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // New profile fields
+  const [gender, setGender] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [civilStatus, setCivilStatus] = useState("");
+  const [purok, setPurok] = useState("");
+  const [voterStatus, setVoterStatus] = useState("");
+  const [houseHoldNumber, setHouseHoldNumber] = useState("");
 
   // File uploads
   const [idFront, setIdFront] = useState<File | null>(null);
@@ -79,7 +93,7 @@ export default function SignUpPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!name || !address || !email || !password) {
+    if (!name || !address || !email || !password || !gender || !dateOfBirth || !civilStatus || !purok || !voterStatus || !houseHoldNumber) {
       errorAlert("Please fill in all fields");
       return;
     }
@@ -110,6 +124,12 @@ export default function SignUpPage() {
       formData.append("password", password);
       formData.append("status", "pending");
       formData.append("contact", contact);
+      formData.append("gender", gender);
+      formData.append("dateOfBirth", dateOfBirth);
+      formData.append("civilStatus", civilStatus);
+      formData.append("purok", purok);
+      formData.append("voterStatus", voterStatus);
+      formData.append("houseHoldNumber", houseHoldNumber);
       formData.append("profile", "/assets/profile.jpg");
       formData.append("idFront", idFront);
       formData.append("idBack", idBack);
@@ -281,7 +301,9 @@ export default function SignUpPage() {
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
+               
+
+                 <div className="space-y-1.5">
                     <Label htmlFor="contact" className="text-sm font-medium text-gray-700">
                         Contact
                     </Label>
@@ -305,7 +327,8 @@ export default function SignUpPage() {
                     </div>
                 </div>
 
-                <div className="space-y-1.5 sm:col-span-2">
+
+                <div className="space-y-1.5 ">
                   <Label htmlFor="address" className="text-sm font-medium text-gray-700">
                     Address
                   </Label>
@@ -316,11 +339,13 @@ export default function SignUpPage() {
                       placeholder="123 Barangay St., Maligaya"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
-                      className="pl-10 h-10 border-gray-200 focus:border-sky-400 focus:ring-sky-400/20 transition-all"
+                      className="pl-10 h-10 border-gray-200 focus:border-sky-400 focus:ring-sky-400/20 transition-all "
                       required
                     />
                   </div>
                 </div>
+
+              
                 <div className="space-y-1.5 sm:col-span-2">
                   <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                     Password
@@ -344,6 +369,142 @@ export default function SignUpPage() {
                     >
                       {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Additional Profile Information */}
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="size-2 rounded-full bg-gradient-to-r from-sky-400 to-emerald-400" />
+                Profile Details
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Gender */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="gender" className="text-sm font-medium text-gray-700">
+                    Gender
+                  </Label>
+                  <div className="relative">
+                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
+                    <select
+                      id="gender"
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                      className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all appearance-none cursor-pointer"
+                      required
+                    >
+                      <option value="" disabled>Select gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Date of Birth */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="dateOfBirth" className="text-sm font-medium text-gray-700">
+                    Date of Birth
+                  </Label>
+                  <div className="relative">
+                    <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
+                    <input
+                      id="dateOfBirth"
+                      type="date"
+                      value={dateOfBirth}
+                      onChange={(e) => setDateOfBirth(e.target.value)}
+                      className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Civil Status */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="civilStatus" className="text-sm font-medium text-gray-700">
+                    Civil Status
+                  </Label>
+                  <div className="relative">
+                    <Heart className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
+                    <select
+                      id="civilStatus"
+                      value={civilStatus}
+                      onChange={(e) => setCivilStatus(e.target.value)}
+                      className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all appearance-none cursor-pointer"
+                      required
+                    >
+                      <option value="" disabled>Select civil status</option>
+                      <option value="Single">Single</option>
+                      <option value="Married">Married</option>
+                      <option value="Widowed">Widowed</option>
+                      <option value="Separated">Separated</option>
+                      <option value="Divorced">Divorced</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Purok */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="purok" className="text-sm font-medium text-gray-700">
+                    Purok
+                  </Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
+                    <select
+                      id="purok"
+                      value={purok}
+                      onChange={(e) => setPurok(e.target.value)}
+                      className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all appearance-none cursor-pointer"
+                      required
+                    >
+                      <option value="" disabled>Select purok</option>
+                      <option value="Purok 1">Purok 1</option>
+                      <option value="Purok 2">Purok 2</option>
+                      <option value="Purok 3">Purok 3</option>
+                      <option value="Purok 4">Purok 4</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Voter Status */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="voterStatus" className="text-sm font-medium text-gray-700">
+                    Voter Status
+                  </Label>
+                  <div className="relative">
+                    <Vote className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none" />
+                    <select
+                      id="voterStatus"
+                      value={voterStatus}
+                      onChange={(e) => setVoterStatus(e.target.value)}
+                      className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all appearance-none cursor-pointer"
+                      required
+                    >
+                      <option value="" disabled>Select voter status</option>
+                      <option value="Registered">Registered</option>
+                      <option value="Not Registered">Not Registered</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Household Number */}
+                <div className="space-y-1.5">
+                  <Label htmlFor="houseHoldNumber" className="text-sm font-medium text-gray-700">
+                    Household Number
+                  </Label>
+                  <div className="relative">
+                    <Hash className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                    <input
+                      id="houseHoldNumber"
+                      type="text"
+                      placeholder="e.g. HH-001"
+                      value={houseHoldNumber}
+                      onChange={(e) => setHouseHoldNumber(e.target.value)}
+                      className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all"
+                      required
+                    />
                   </div>
                 </div>
               </div>

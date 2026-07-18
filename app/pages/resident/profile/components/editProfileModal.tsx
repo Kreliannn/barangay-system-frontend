@@ -11,7 +11,18 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Loader2, UserRound, MapPin, Phone, Save } from "lucide-react";
+import {
+  Loader2,
+  UserRound,
+  MapPin,
+  Phone,
+  Save,
+  CalendarDays,
+  Users,
+  Heart,
+  Hash,
+  Vote,
+} from "lucide-react";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -19,7 +30,23 @@ interface EditProfileModalProps {
   currentName: string;
   currentAddress: string;
   currentContact: string;
-  onSave: (data: { name: string; address: string; contact: string }) => Promise<void>;
+  currentGender: string;
+  currentDateOfBirth: string;
+  currentCivilStatus: string;
+  currentPurok: string;
+  currentVoterStatus: string;
+  currentHouseHoldNumber: string;
+  onSave: (data: {
+    name: string;
+    address: string;
+    contact: string;
+    gender: string;
+    dateOfBirth: string;
+    civilStatus: string;
+    purok: string;
+    voterStatus: string;
+    houseHoldNumber: string;
+  }) => Promise<void>;
 }
 
 export default function EditProfileModal({
@@ -28,18 +55,47 @@ export default function EditProfileModal({
   currentName,
   currentAddress,
   currentContact,
+  currentGender,
+  currentDateOfBirth,
+  currentCivilStatus,
+  currentPurok,
+  currentVoterStatus,
+  currentHouseHoldNumber,
   onSave,
 }: EditProfileModalProps) {
   const [name, setName] = useState(currentName);
   const [address, setAddress] = useState(currentAddress);
   const [contact, setContact] = useState(currentContact);
+  const [gender, setGender] = useState(currentGender);
+  const [dateOfBirth, setDateOfBirth] = useState(currentDateOfBirth);
+  const [civilStatus, setCivilStatus] = useState(currentCivilStatus);
+  const [purok, setPurok] = useState(currentPurok);
+  const [voterStatus, setVoterStatus] = useState(currentVoterStatus);
+  const [houseHoldNumber, setHouseHoldNumber] = useState(currentHouseHoldNumber);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setName(currentName);
     setAddress(currentAddress);
     setContact(currentContact);
-  }, [currentName, currentAddress, currentContact, open]);
+    setGender(currentGender);
+    setDateOfBirth(currentDateOfBirth);
+    setCivilStatus(currentCivilStatus);
+    setPurok(currentPurok);
+    setVoterStatus(currentVoterStatus);
+    setHouseHoldNumber(currentHouseHoldNumber);
+  }, [
+    currentName,
+    currentAddress,
+    currentContact,
+    currentGender,
+    currentDateOfBirth,
+    currentCivilStatus,
+    currentPurok,
+    currentVoterStatus,
+    currentHouseHoldNumber,
+    open,
+  ]);
 
   const handleSubmit = async () => {
     if (!name.trim()) return;
@@ -50,6 +106,12 @@ export default function EditProfileModal({
         name: name.trim(),
         address: address.trim(),
         contact: contact.trim(),
+        gender,
+        dateOfBirth,
+        civilStatus,
+        purok,
+        voterStatus,
+        houseHoldNumber,
       });
       onOpenChange(false);
     } catch {
@@ -62,11 +124,17 @@ export default function EditProfileModal({
   const hasChanges =
     name !== currentName ||
     address !== currentAddress ||
-    contact !== currentContact;
+    contact !== currentContact ||
+    gender !== currentGender ||
+    dateOfBirth !== currentDateOfBirth ||
+    civilStatus !== currentCivilStatus ||
+    purok !== currentPurok ||
+    voterStatus !== currentVoterStatus ||
+    houseHoldNumber !== currentHouseHoldNumber;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-white rounded-2xl p-0 gap-0">
+      <DialogContent className="sm:max-w-lg bg-white rounded-2xl p-0 gap-0 max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-100">
           <DialogHeader>
             <div className="flex items-center gap-3">
@@ -86,51 +154,192 @@ export default function EditProfileModal({
         </div>
 
         <div className="p-6 space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-name" className="text-sm font-medium text-gray-700">
-              Full Name
-            </Label>
-            <div className="relative">
-              <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-              <Input
-                id="edit-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="pl-10 h-10 border-gray-200 focus:border-sky-400"
-                placeholder="Your full name"
-              />
+          {/* Basic Info */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <div className="size-1.5 rounded-full bg-sky-400" />
+              Basic Information
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="edit-name" className="text-sm font-medium text-gray-700">
+                  Full Name
+                </Label>
+                <div className="relative">
+                  <UserRound className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                  <Input
+                    id="edit-name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="pl-10 h-10 border-gray-200 focus:border-sky-400"
+                    placeholder="Your full name"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-contact" className="text-sm font-medium text-gray-700">
+                  Contact Number
+                </Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                  <Input
+                    id="edit-contact"
+                    value={contact}
+                    onChange={(e) => setContact(e.target.value)}
+                    className="pl-10 h-10 border-gray-200 focus:border-sky-400"
+                    placeholder="0917 123 4567"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-gender" className="text-sm font-medium text-gray-700">
+                  Gender
+                </Label>
+                <div className="relative">
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none z-10" />
+                  <select
+                    id="edit-gender"
+                    value={gender}
+                    onChange={(e) => setGender(e.target.value)}
+                    className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-contact" className="text-sm font-medium text-gray-700">
-              Contact Number
-            </Label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-              <Input
-                id="edit-contact"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-                className="pl-10 h-10 border-gray-200 focus:border-sky-400"
-                placeholder="0917 123 4567"
-              />
+          {/* Address & Purok */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <div className="size-1.5 rounded-full bg-emerald-400" />
+              Address & Location
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5 sm:col-span-2">
+                <Label htmlFor="edit-address" className="text-sm font-medium text-gray-700">
+                  Address
+                </Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                  <Input
+                    id="edit-address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    className="pl-10 h-10 border-gray-200 focus:border-sky-400"
+                    placeholder="Your address"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-purok" className="text-sm font-medium text-gray-700">
+                  Purok
+                </Label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none z-10" />
+                  <select
+                    id="edit-purok"
+                    value={purok}
+                    onChange={(e) => setPurok(e.target.value)}
+                    className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Select purok</option>
+                    <option value="Purok 1">Purok 1</option>
+                    <option value="Purok 2">Purok 2</option>
+                    <option value="Purok 3">Purok 3</option>
+                    <option value="Purok 4">Purok 4</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-houseHoldNumber" className="text-sm font-medium text-gray-700">
+                  Household Number
+                </Label>
+                <div className="relative">
+                  <Hash className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                  <Input
+                    id="edit-houseHoldNumber"
+                    value={houseHoldNumber}
+                    onChange={(e) => setHouseHoldNumber(e.target.value)}
+                    className="pl-10 h-10 border-gray-200 focus:border-sky-400"
+                    placeholder="e.g. HH-001"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-address" className="text-sm font-medium text-gray-700">
-              Address
-            </Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-              <Input
-                id="edit-address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="pl-10 h-10 border-gray-200 focus:border-sky-400"
-                placeholder="Your address"
-              />
+          {/* Personal Details */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <div className="size-1.5 rounded-full bg-amber-400" />
+              Personal Details
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-dateOfBirth" className="text-sm font-medium text-gray-700">
+                  Date of Birth
+                </Label>
+                <div className="relative">
+                  <CalendarDays className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none z-10" />
+                  <input
+                    id="edit-dateOfBirth"
+                    type="date"
+                    value={dateOfBirth}
+                    onChange={(e) => setDateOfBirth(e.target.value)}
+                    className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-civilStatus" className="text-sm font-medium text-gray-700">
+                  Civil Status
+                </Label>
+                <div className="relative">
+                  <Heart className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none z-10" />
+                  <select
+                    id="edit-civilStatus"
+                    value={civilStatus}
+                    onChange={(e) => setCivilStatus(e.target.value)}
+                    className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Select civil status</option>
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Widowed">Widowed</option>
+                    <option value="Separated">Separated</option>
+                    <option value="Divorced">Divorced</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-voterStatus" className="text-sm font-medium text-gray-700">
+                  Voter Status
+                </Label>
+                <div className="relative">
+                  <Vote className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400 pointer-events-none z-10" />
+                  <select
+                    id="edit-voterStatus"
+                    value={voterStatus}
+                    onChange={(e) => setVoterStatus(e.target.value)}
+                    className="w-full h-10 pl-10 pr-3 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Select voter status</option>
+                    <option value="Registered">Registered</option>
+                    <option value="Not Registered">Not Registered</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>

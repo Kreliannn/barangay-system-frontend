@@ -25,6 +25,11 @@ import {
   KeyRound,
   Phone,
   Loader2,
+  CalendarDays,
+  Users,
+  Heart,
+  Hash,
+  Vote,
 } from "lucide-react";
 
 interface Skill {
@@ -43,6 +48,12 @@ interface Account {
   profile: string;
   status: string;
   skills: Skill[];
+  gender: string;
+  dateOfBirth: string;
+  civilStatus: string;
+  purok: string;
+  voterStatus: string;
+  houseHoldNumber: string;
 }
 
 export default function ProfilePage() {
@@ -103,7 +114,17 @@ export default function ProfilePage() {
 
   // Update info mutation
   const updateInfoMutation = useMutation({
-    mutationFn: async (data: { name: string; address: string; contact: string }) => {
+    mutationFn: async (data: {
+      name: string;
+      address: string;
+      contact: string;
+      gender: string;
+      dateOfBirth: string;
+      civilStatus: string;
+      purok: string;
+      voterStatus: string;
+      houseHoldNumber: string;
+    }) => {
       const res = await axiosInstance.patch(`/account/${user?._id}/info`, data);
       return res.data;
     },
@@ -294,6 +315,48 @@ export default function ProfilePage() {
                   <p className="text-sm text-gray-800">{profile.address}</p>
                 </div>
               </div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                <Users className="size-4 text-sky-500 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Gender</p>
+                  <p className="text-sm text-gray-800 capitalize">{profile.gender || "Not set"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                <CalendarDays className="size-4 text-emerald-500 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Date of Birth</p>
+                  <p className="text-sm text-gray-800">{profile.dateOfBirth ? new Date(profile.dateOfBirth).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : "Not set"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                <Heart className="size-4 text-rose-500 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Civil Status</p>
+                  <p className="text-sm text-gray-800">{profile.civilStatus || "Not set"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                <MapPin className="size-4 text-amber-500 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Purok</p>
+                  <p className="text-sm text-gray-800">{profile.purok || "Not set"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                <Vote className="size-4 text-violet-500 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Voter Status</p>
+                  <p className="text-sm text-gray-800">{profile.voterStatus || "Not set"}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                <Hash className="size-4 text-teal-500 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Household Number</p>
+                  <p className="text-sm text-gray-800">{profile.houseHoldNumber || "Not set"}</p>
+                </div>
+              </div>
             </div>
           </div>
         ) : (
@@ -397,6 +460,12 @@ export default function ProfilePage() {
         currentName={profile?.name || ""}
         currentAddress={profile?.address || ""}
         currentContact={profile?.contact || ""}
+        currentGender={profile?.gender || ""}
+        currentDateOfBirth={profile?.dateOfBirth || ""}
+        currentCivilStatus={profile?.civilStatus || ""}
+        currentPurok={profile?.purok || ""}
+        currentVoterStatus={profile?.voterStatus || ""}
+        currentHouseHoldNumber={profile?.houseHoldNumber || ""}
         onSave={async (data) => {
           await updateInfoMutation.mutateAsync(data);
         }}
