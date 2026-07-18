@@ -236,19 +236,7 @@ export default function SignUpPage() {
       {/* Main Content */}
       <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-gradient-to-br from-sky-100 to-emerald-100 mb-4 shadow-sm">
-            <UserRound className="size-8 text-sky-600" />
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-            Create Your Account
-          </h1>
-          <p className="mt-2 text-gray-500 max-w-md mx-auto">
-            Register as a resident of Barangay Maligaya. Upload your valid ID
-            and start accessing community services.
-          </p>
-        </div>
-
+    
         {/* Form Card */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-sky-100 overflow-hidden">
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-8">
