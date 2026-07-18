@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { Home, UserPlus2, FileText, Award, LogOut, Menu, X, History } from "lucide-react"
+import { Home, UserPlus2, FileText, Award, LogOut, Menu, X, History, Building } from "lucide-react"
 import { useState } from "react"
 import {
   Sidebar,
@@ -20,10 +20,14 @@ import { useQueryClient } from "@tanstack/react-query";
 const navigationItems = [
   { title: "Dashboard", url: "/pages/secretary/home", icon: Home },
   { title: "Verify Resident", url: "/pages/secretary/verifyResident", icon: UserPlus2 },
+  { title: "Verify Business", url: "/pages/secretary/verifyBusiness", icon: Building },
   { title: "Document Requests", url: "/pages/secretary/documentRequest", icon: FileText },
   { title: "Request History", url: "/pages/secretary/requestHistory", icon: History },
   { title: "Resident Skills", url: "/pages/secretary/residentSkills", icon: Award },
+  { title: "Barangay Details", url: "/pages/secretary/aiContext", icon: Building },
 ]
+
+
 
 const accountItems = [
   { title: "Logout", url: "/", icon: LogOut }

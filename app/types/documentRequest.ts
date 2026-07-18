@@ -32,6 +32,7 @@ export interface documentRequestInterface {
     document: string,
     status : string,
     isPaid : boolean,
+    price : number,
     
     fullName : string | null,
     contact: string | null,

@@ -56,7 +56,7 @@ export default function SignInPage() {
       setUser(account);
 
       // Navigate immediately — button stays in loading state until component unmounts
-      router.push("/pages/resident/home");
+      router.push("/pages/resident/profile");
     } catch (err: any) {
       const message =
         err?.response?.data || err?.message || "Login failed";

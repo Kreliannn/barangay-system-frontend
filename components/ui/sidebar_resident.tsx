@@ -1,6 +1,6 @@
 "use client"
 import Link from "next/link"
-import { Calendar, Home, Building, Search, UserPlus2, User, FileText, BarChart3, Building2, LogOut, Menu, X, MenuIcon, Receipt, Recycle, Activity, ClipboardList } from "lucide-react"
+import { Calendar , Home, Building, Search, UserPlus2, User, FileText, BarChart3, Building2, LogOut, Menu, X, MenuIcon, Receipt, Recycle, Activity, ClipboardList } from "lucide-react"
 import { useState } from "react"
 import {
   Sidebar,
@@ -19,19 +19,24 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import {
  
- 
+  
   FolderOpen,
  ActivityIcon,
   Wrench,
+  MessageCircle,
+  MessageCircleCheckIcon,
+  HousePlus
 } from "lucide-react"
 
 const navigationItems = [
-  { title: "Dashboard", url: "/pages/resident/home", icon: Home },
   { title: "Profile", url: "/pages/resident/profile", icon: User },
   { title: "My Documents", url: "/pages/resident/myDocuments", icon: FolderOpen },
   { title: "Request Document", url: "/pages/resident/documentRequest", icon: FileText },
   { title: "Resident Skills", url: "/pages/resident/residentSkills", icon: Wrench },
-    { title: "Activity", url: "/pages/resident/activity", icon: ActivityIcon },
+  { title: "Activity", url: "/pages/resident/activity", icon: ActivityIcon },
+  { title: "Ai Chatbot", url: "/pages/resident/aiChatBot", icon: MessageCircleCheckIcon },
+  { title: "Business", url: "/pages/resident/business", icon: Building },
+  { title: "My Business", url: "/pages/resident/myBusiness", icon: HousePlus },
 ]
 
 const accountItems = [
