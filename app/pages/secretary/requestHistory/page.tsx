@@ -26,7 +26,7 @@ import {
   UserRound,
   Wallet,
   Eye,
-  Download,
+  Download, 
   History,
 } from "lucide-react";
 
@@ -230,7 +230,7 @@ export default function RequestHistoryPage() {
                         className="h-7 text-xs text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
                       >
                         <Download className="size-3" />
-                        PDF
+                        Document
                       </Button>
                     </div>
                   </TableCell>
