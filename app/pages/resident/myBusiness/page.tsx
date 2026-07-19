@@ -721,7 +721,7 @@ export default function MyBusinessPage() {
                 <input
                   ref={documentInputRef}
                   type="file"
-                  accept=".pdf,.jpg,.jpeg,.png"
+                  accept=".jpg,.jpeg,.png"
                   className="hidden"
                   onChange={(e) => {
                     const f = e.target.files?.[0];
@@ -756,7 +756,7 @@ export default function MyBusinessPage() {
                       <FileText className="size-4 text-emerald-500" />
                     </div>
                     <span className="text-xs font-medium text-gray-500">Upload Document</span>
-                    <span className="text-[10px] text-gray-400">PDF or Image (max 10MB)</span>
+                    <span className="text-[10px] text-gray-400">Image (max 10MB)</span>
                   </button>
                 )}
               </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import axiosInstance from "@/app/utils/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ViewReviewsModal from "@/components/ui/viewReviewsModal";
+
 import {
   BarChart,
   Bar,
@@ -45,6 +46,8 @@ import {
   BarChart3,
   PieChart as PieChartIcon,
   TrendingUp,
+  Sparkles,
+  Lightbulb,
 } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────
@@ -199,6 +202,26 @@ export default function SecretaryResidentSkillsPage() {
   const [viewReviewsOpen, setViewReviewsOpen] = useState(false);
   const [viewReviewsResident, setViewReviewsResident] = useState<Resident | null>(null);
 
+  // AI Suggestions
+  const [aiSuggestionText, setAiSuggestionText] = useState<string | null>(null);
+
+  const aiSuggestionMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axiosInstance.post("/account/ai-suggestion");
+      return res.data;
+    },
+    onSuccess: (data) => {
+      setAiSuggestionText(data);
+    },
+    onError: () => {
+      setAiSuggestionText("Failed to generate AI suggestions. Please try again later.");
+    },
+  });
+
+  const clearAiSuggestion = () => {
+    setAiSuggestionText(null);
+  };
+
   // Fetch residents with skills
   const { data: residents, isLoading } = useQuery<Resident[]>({
     queryKey: ["secretary", "residents", "skills"],
@@ -299,14 +322,113 @@ export default function SecretaryResidentSkillsPage() {
     <div className="w-full min-h-dvh p-4 sm:p-6 space-y-6">
       {/* ── Header ── */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <BarChart3 className="size-6 text-sky-600" />
-          Resident Skills Overview
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Browse all registered residents, their skills, and community feedback
-        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <BarChart3 className="size-6 text-sky-600" />
+              Resident Skills Overview
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Browse all registered residents, their skills, and community feedback
+            </p>
+          </div>
+          <Button
+            onClick={() => aiSuggestionMutation.mutate()}
+            disabled={aiSuggestionMutation.isPending}
+            className="shrink-0 h-10 gap-2 bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700 text-white font-medium shadow-lg shadow-purple-200/50 transition-all"
+          >
+            {aiSuggestionMutation.isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Sparkles className="size-4" />
+            )}
+            {aiSuggestionMutation.isPending ? "Analyzing..." : "AI Suggestions"}
+          </Button>
+        </div>
       </div>
+
+      {/* ── AI Suggestions Inline Display ── */}
+      {(aiSuggestionMutation.isPending || aiSuggestionText) && (
+        <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl border border-purple-200 shadow-sm overflow-hidden">
+          {/* Header bar */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-purple-100">
+            <div className="flex items-center gap-2">
+              <div className="size-8 rounded-lg bg-gradient-to-br from-purple-100 to-violet-100 flex items-center justify-center shadow-sm">
+                <Lightbulb className="size-4 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">AI Suggestions</h3>
+                <p className="text-xs text-gray-500">Barangay recommendations based on resident skills</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {aiSuggestionText && !aiSuggestionMutation.isPending && (
+                <Button
+                  onClick={() => aiSuggestionMutation.mutate()}
+                  size="sm"
+                  className="h-8 gap-1.5 bg-gradient-to-r from-purple-500 to-violet-600 hover:from-purple-600 hover:to-violet-700 text-white text-xs font-medium shadow-sm transition-all"
+                >
+                  <Sparkles className="size-3.5" />
+                  Regenerate
+                </Button>
+              )}
+              <button
+                onClick={clearAiSuggestion}
+                className="size-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-white/50 transition-colors"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-5">
+            {aiSuggestionMutation.isPending ? (
+              <div className="flex items-center gap-4 py-6">
+                <div className="relative">
+                  <Loader2 className="size-6 animate-spin text-purple-500" />
+                  <div className="absolute inset-0 animate-ping opacity-20">
+                    <div className="size-6 rounded-full bg-purple-500" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">Generating AI suggestions...</p>
+                  <p className="text-xs text-gray-400 mt-0.5">Analyzing resident skills and community data</p>
+                </div>
+              </div>
+            ) : aiSuggestionText ? (
+              <div className="prose prose-sm max-w-none">
+                {aiSuggestionText.split("\n").map((line, i) => {
+                  if (!line.trim()) return <br key={i} />;
+                  // Bold lines starting with ** (markdown bold used as headers)
+                  if (line.trim().startsWith("**") && line.trim().endsWith("**")) {
+                    return (
+                      <p key={i} className="font-bold text-gray-900 text-sm mt-3 first:mt-0">
+                        {line.replace(/\*\*/g, "")}
+                      </p>
+                    );
+                  }
+                  // Lines that look like headers (Title, Reason, Recommendation, etc.)
+                  if (/^(Title|Reason|Recommendation|Implementation|Expected Benefits|Conclusion|Note):/i.test(line.trim())) {
+                    const [label, ...rest] = line.split(":");
+                    return (
+                      <p key={i} className="text-sm text-gray-800 mt-2 first:mt-0">
+                        <span className="font-semibold text-purple-700">{label}:</span>
+                        {rest.join(":")}
+                      </p>
+                    );
+                  }
+                  return (
+                    <p key={i} className="text-sm text-gray-700 mt-1.5 first:mt-0 leading-relaxed">
+                      {line}
+                    </p>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        </div>
+      )}
 
       {/* ── Analytics Section ── */}
       {!isLoading && residents && residents.length > 0 && (
