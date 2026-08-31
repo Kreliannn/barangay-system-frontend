@@ -80,6 +80,68 @@ export const documentTypes = [
     ],
     templateLocation: "/documents/barangayBusinessClearance.pdf",
   },
+  {
+    document: "certificateOfCuttingTrees",
+    price : 80,
+    fields: [
+      "fullName",
+      "sqrmtr",
+      "dateIssued",
+    ],
+    templateLocation: "/documents/CertififcateOfTreeCutting.pdf",
+  },
+
+  {
+    document: "certificateOfAppearance",
+    price : 80,
+    fields: [
+      "fullName",
+      "Purpose",
+      "Activity",
+      "dateIssued",
+    ],
+    templateLocation: "/documents/certificate-of-appearance.pdf",
+  },
+
+
+   {
+    document: "certificateOfAttestation",
+    price : 80,
+    fields: [
+      "fullName",
+      "monthlyIncome",
+      "monthlyExpences",
+      "dateIssued",
+    ],
+    templateLocation: "/documents/CertificateOfAttestation.pdf",
+  },
+
+
+  {
+    document: "certificateOfLowIncome",
+    price : 80,
+    fields: [
+      "fullName",
+      "partner",
+      "monthlyIncome",
+      "child",
+      "dateIssued",
+    ],
+    templateLocation: "/documents/CertificateOfLowIncome.pdf",
+  },
+
+
+  {
+    document: "certificateOfFirstJobSeeker",
+    price : 80,
+    fields: [
+      "fullName",
+      "age",
+      "dateIssued",
+    ],
+    templateLocation: "/documents/certification-of-first-time-jobseeker (1).pdf",
+  },
+
 ];
 
 export const getDocumentPrice = (document: string) => {

@@ -261,6 +261,19 @@ export default function MyDocumentsPage() {
 
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
+
+
+                         <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => generateDocumentPDF(doc)}
+                            className="size-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                            title="Download PDF"
+                          >
+                            <Download className="size-4" /> ssssssss
+                          </Button>
+
+
                         {doc.isPaid ? (
                           <Button
                             variant="ghost"

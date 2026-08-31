@@ -6,6 +6,7 @@ import axiosInstance from "@/app/utils/axios";
 import useUserStore from "@/app/store/useUserStore";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { successAlert, errorAlert } from "@/app/utils/alert";
 import AddSkillModal from "./components/addSkillModal";
 import EditProfileModal from "./components/editProfileModal";
@@ -37,6 +38,8 @@ interface Skill {
   skill: string;
   experience: number;
   proficiency: string;
+  availability: string;
+  services: string[];
 }
 
 interface Account {
@@ -161,6 +164,8 @@ export default function ProfilePage() {
       skill: string;
       experience: number;
       proficiency: string;
+      availability: string;
+      services: string[];
     }) => {
       const res = await axiosInstance.post(`/account/${user?._id}/skills`, skill);
       return res.data;
@@ -172,6 +177,31 @@ export default function ProfilePage() {
     onError: (err: any) => {
       const message = err?.response?.data || err?.message || "Failed to add skill";
       errorAlert(typeof message === "string" ? message : "Failed to add skill");
+    },
+  });
+
+  // Update skill availability mutation
+  const updateSkillAvailabilityMutation = useMutation({
+    mutationFn: async ({
+      skillId,
+      availability,
+    }: {
+      skillId: string;
+      availability: string;
+    }) => {
+      const res = await axiosInstance.patch(
+        `/account/${user?._id}/skills/${skillId}`,
+        { availability }
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+    onError: (err: any) => {
+      const message =
+        err?.response?.data || err?.message || "Failed to update availability";
+      errorAlert(typeof message === "string" ? message : "Failed to update availability");
     },
   });
 
@@ -416,7 +446,7 @@ export default function ProfilePage() {
                 className="group flex items-center justify-between p-4 rounded-xl border border-gray-100 bg-white hover:border-sky-200 hover:shadow-sm transition-all duration-200"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <Star className="size-3.5 text-amber-400 shrink-0" />
                     <h3 className="text-sm font-semibold text-gray-900 truncate">
                       {skill.skill}
@@ -429,16 +459,52 @@ export default function ProfilePage() {
                     <Clock className="size-3" />
                     <span>{skill.experience} {skill.experience === 1 ? "year" : "years"} of experience</span>
                   </div>
+                  {skill.services?.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 ml-5 mt-2">
+                      {skill.services.map((service) => (
+                        <span
+                          key={service}
+                          className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"
+                        >
+                          {service}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeSkillMutation.mutate(skill._id)}
-                  disabled={removeSkillMutation.isPending}
-                  className="size-8 shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-200 text-gray-400 hover:text-red-500 hover:bg-red-50"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex flex-col items-center gap-1">
+                    <span
+                      className={`text-[10px] font-medium uppercase tracking-wider ${
+                        skill.availability === "available"
+                          ? "text-emerald-600"
+                          : "text-amber-600"
+                      }`}
+                    >
+                      {skill.availability === "available" ? "Available" : "Busy"}
+                    </span>
+                    <Switch
+                      size="sm"
+                      checked={skill.availability === "available"}
+                      disabled={updateSkillAvailabilityMutation.isPending}
+                      onCheckedChange={(checked) =>
+                        updateSkillAvailabilityMutation.mutate({
+                          skillId: skill._id,
+                          availability: checked ? "available" : "busy",
+                        })
+                      }
+                    />
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeSkillMutation.mutate(skill._id)}
+                    disabled={removeSkillMutation.isPending}
+                    className="size-8 shrink-0 opacity-0 group-hover:opacity-100 transition-all duration-200 text-gray-400 hover:text-red-500 hover:bg-red-50"
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>

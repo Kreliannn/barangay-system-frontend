@@ -33,6 +33,7 @@ const navigationItems = [
   { title: "My Documents", url: "/pages/resident/myDocuments", icon: FolderOpen },
   { title: "Request Document", url: "/pages/resident/documentRequest", icon: FileText },
   { title: "Resident Skills", url: "/pages/resident/residentSkills", icon: Wrench },
+  { title: "Work Request", url: "/pages/resident/workRequest", icon: HousePlus },
   { title: "Activity", url: "/pages/resident/activity", icon: ActivityIcon },
   { title: "Ai Chatbot", url: "/pages/resident/aiChatBot", icon: MessageCircleCheckIcon },
   { title: "Business", url: "/pages/resident/business", icon: Building },

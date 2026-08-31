@@ -15,7 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { successAlert, errorAlert } from "@/app/utils/alert";
-import AddReviewModal from "@/components/ui/addReviewModal";
+import BookServiceModal from "@/components/ui/bookServiceModal";
+// REVIEW_REMOVED: import AddReviewModal from "@/components/ui/addReviewModal";
 import ViewReviewsModal from "@/components/ui/viewReviewsModal";
 import {
   Users,
@@ -27,7 +28,8 @@ import {
   Mail,
   Phone,
   MapPin,
-  MessageSquareText,
+  // REVIEW_REMOVED: MessageSquareText,
+  CalendarCheck,
   SlidersHorizontal,
   X,
   UserRound,
@@ -40,6 +42,8 @@ interface Skill {
   skill: string;
   experience: number;
   proficiency: string;
+  availability: string;
+  services: string[];
 }
 
 interface Review {
@@ -157,13 +161,17 @@ export default function ResidentSkillsPage() {
   const [minExperience, setMinExperience] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Add review modal
-  const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [selectedResident, setSelectedResident] = useState<Resident | null>(null);
+  // REVIEW_REMOVED: Add review modal
+  // REVIEW_REMOVED: const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  // REVIEW_REMOVED: const [selectedResident, setSelectedResident] = useState<Resident | null>(null);
 
   // View reviews modal
   const [viewReviewsOpen, setViewReviewsOpen] = useState(false);
   const [viewReviewsResident, setViewReviewsResident] = useState<Resident | null>(null);
+
+  // Book service modal
+  const [bookModalOpen, setBookModalOpen] = useState(false);
+  const [selectedResident, setSelectedResident] = useState<Resident | null>(null);
 
   // Fetch residents with skills
   const { data: residents, isLoading } = useQuery<Resident[]>({
@@ -174,21 +182,45 @@ export default function ResidentSkillsPage() {
     },
   });
 
-  // Add review mutation
-  const addReviewMutation = useMutation({
-    mutationFn: async (review: { star: number; skill: string; message: string }) => {
-      await axiosInstance.post(`/account/${selectedResident?._id}/reviews`, review);
+  // Book service mutation
+  const bookServiceMutation = useMutation({
+    mutationFn: async (data: { skill: string; service: string; description: string }) => {
+      const clientId = user?._id || "";
+      const workerId = selectedResident?._id || "";
+      await axiosInstance.post("/account/book", {
+        client: clientId,
+        worker: workerId,
+        skill: data.skill,
+        service: data.service,
+        description: data.description,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["residents"] });
-      successAlert("Review submitted successfully!");
+      successAlert("Service booked successfully!");
     },
     onError: (err: any) => {
-      const message = err?.response?.data || err?.message || "Failed to submit review";
-      errorAlert(typeof message === "string" ? message : "Failed to submit review");
+      const message = err?.response?.data || err?.message || "Failed to book service";
+      errorAlert(typeof message === "string" ? message : "Failed to book service");
       throw err;
     },
   });
+
+  // REVIEW_REMOVED: Add review mutation
+  // REVIEW_REMOVED: const addReviewMutation = useMutation({
+  // REVIEW_REMOVED:   mutationFn: async (review: { star: number; skill: string; message: string }) => {
+  // REVIEW_REMOVED:     await axiosInstance.post(`/account/${selectedResident?._id}/reviews`, review);
+  // REVIEW_REMOVED:   },
+  // REVIEW_REMOVED:   onSuccess: () => {
+  // REVIEW_REMOVED:     queryClient.invalidateQueries({ queryKey: ["residents"] });
+  // REVIEW_REMOVED:     successAlert("Review submitted successfully!");
+  // REVIEW_REMOVED:   },
+  // REVIEW_REMOVED:   onError: (err: any) => {
+  // REVIEW_REMOVED:     const message = err?.response?.data || err?.message || "Failed to submit review";
+  // REVIEW_REMOVED:     errorAlert(typeof message === "string" ? message : "Failed to submit review");
+  // REVIEW_REMOVED:     throw err;
+  // REVIEW_REMOVED:   },
+  // REVIEW_REMOVED: });
 
   // Extract unique skill names from all residents for the filter dropdown
   const allSkillNames = useMemo(() => {
@@ -239,14 +271,19 @@ export default function ResidentSkillsPage() {
     });
   }, [residents, searchQuery, skillFilter, proficiencyFilter, minExperience]);
 
-  const openReviewModal = (resident: Resident) => {
-    setSelectedResident(resident);
-    setReviewModalOpen(true);
-  };
+  // REVIEW_REMOVED: const openReviewModal = (resident: Resident) => {
+  // REVIEW_REMOVED:   setSelectedResident(resident);
+  // REVIEW_REMOVED:   setReviewModalOpen(true);
+  // REVIEW_REMOVED: };
 
   const openViewReviews = (resident: Resident) => {
     setViewReviewsResident(resident);
     setViewReviewsOpen(true);
+  };
+
+  const openBookModal = (resident: Resident) => {
+    setSelectedResident(resident);
+    setBookModalOpen(true);
   };
 
   return (
@@ -258,7 +295,7 @@ export default function ResidentSkillsPage() {
           Resident Skills Directory
         </h1>
         <p className="text-sm text-gray-500 mt-1">
-          Browse residents and their skills. Leave feedback on work you&apos;ve received.
+          Browse residents and their skills. Book services directly from residents.
         </p>
       </div>
 
@@ -442,16 +479,17 @@ export default function ResidentSkillsPage() {
             <ResidentCard
               key={resident._id}
               resident={resident}
-              onReview={() => openReviewModal(resident)}
+              // REVIEW_REMOVED: onReview={() => openReviewModal(resident)}
               onViewReviews={() => openViewReviews(resident)}
+              onBook={() => openBookModal(resident)}
               isOwnProfile={user?._id === resident._id}
             />
           ))}
         </div>
       )}
 
-      {/* Add Review Modal */}
-      {selectedResident && (
+      {/* REVIEW_REMOVED: Add Review Modal */}
+      {/* REVIEW_REMOVED: {selectedResident && (
         <AddReviewModal
           open={reviewModalOpen}
           onOpenChange={setReviewModalOpen}
@@ -461,9 +499,9 @@ export default function ResidentSkillsPage() {
             await addReviewMutation.mutateAsync(review);
           }}
         />
-      )}
+      )} */}
 
-      {/* View Reviews Modal */}
+      {/* REVIEW_REMOVED: View Reviews Modal */}
       {viewReviewsResident && (
         <ViewReviewsModal
           open={viewReviewsOpen}
@@ -474,6 +512,19 @@ export default function ResidentSkillsPage() {
           totalReviews={viewReviewsResident.totalReviews || 0}
         />
       )}
+
+      {/* Book Service Modal */}
+      {selectedResident && (
+        <BookServiceModal
+          open={bookModalOpen}
+          onOpenChange={setBookModalOpen}
+          residentName={selectedResident.name}
+          residentSkills={selectedResident.skills || []}
+          onBook={async (data) => {
+            await bookServiceMutation.mutateAsync(data);
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -481,13 +532,15 @@ export default function ResidentSkillsPage() {
 // ─── Resident Card ────────────────────────────────────────────────
 function ResidentCard({
   resident,
-  onReview,
+  // REVIEW_REMOVED: onReview,
   onViewReviews,
+  onBook,
   isOwnProfile,
 }: {
   resident: Resident;
-  onReview: () => void;
+  // REVIEW_REMOVED: onReview: () => void;
   onViewReviews: () => void;
+  onBook: () => void;
   isOwnProfile: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -529,6 +582,7 @@ function ResidentCard({
                 rating={resident.averageRating || 0}
                 total={resident.totalReviews || 0}
               />
+              {/* View all reviews button */}
               {(resident.totalReviews || 0) > 0 && (
                 <button
                   onClick={(e) => {
@@ -543,8 +597,8 @@ function ResidentCard({
             </div>
           </div>
 
-          {/* Review button */}
-          {!isOwnProfile && (
+          {/* REVIEW_REMOVED: Review button */}
+          {/* REVIEW_REMOVED: {!isOwnProfile && (
             <Button
               size="sm"
               onClick={onReview}
@@ -552,6 +606,18 @@ function ResidentCard({
             >
               <MessageSquareText className="size-3.5" />
               Review
+            </Button>
+          )} */}
+
+          {/* Book button */}
+          {!isOwnProfile && (
+            <Button
+              size="sm"
+              onClick={onBook}
+              className="shrink-0 h-8 bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 text-white text-xs font-medium shadow-sm shadow-sky-200/50 opacity-0 group-hover:opacity-100 transition-all duration-200"
+            >
+              <CalendarCheck className="size-3.5" />
+              Book
             </Button>
           )}
         </div>
@@ -595,21 +661,46 @@ function ResidentCard({
             {displaySkills.map((skill) => (
               <div
                 key={skill._id}
-                className="flex items-center justify-between p-2.5 rounded-lg bg-gray-50 border border-gray-100 hover:border-sky-100 hover:bg-sky-50/50 transition-colors"
+                className="p-2.5 rounded-lg bg-gray-50 border border-gray-100 hover:border-sky-100 hover:bg-sky-50/50 transition-colors"
               >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-gray-800 truncate">
-                    {skill.skill}
-                  </p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    <Clock className="size-3 text-gray-400" />
-                    <span className="text-[11px] text-gray-500">
-                      {skill.experience}{" "}
-                      {skill.experience === 1 ? "yr" : "yrs"}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-gray-800 truncate">
+                      {skill.skill}
+                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <Clock className="size-3 text-gray-400" />
+                      <span className="text-[11px] text-gray-500">
+                        {skill.experience}{" "}
+                        {skill.experience === 1 ? "yr" : "yrs"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <ProficiencyBadge level={skill.proficiency} />
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider border ${
+                        skill.availability === "available"
+                          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                          : "bg-red-50 text-red-600 border-red-200"
+                      }`}
+                    >
+                      {skill.availability === "available" ? "Available" : "Busy"}
                     </span>
                   </div>
                 </div>
-                <ProficiencyBadge level={skill.proficiency} />
+                {skill.services?.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {skill.services.map((service) => (
+                      <span
+                        key={service}
+                        className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      >
+                        {service}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
 
@@ -628,8 +719,8 @@ function ResidentCard({
           <p className="text-xs text-gray-400 italic">No skills listed</p>
         )}
 
-        {/* Review button (visible when not hovered) */}
-        {!isOwnProfile && (
+        {/* REVIEW_REMOVED: Review button (visible when not hovered) */}
+        {/* REVIEW_REMOVED: {!isOwnProfile && (
           <Button
             variant="outline"
             size="sm"
@@ -638,6 +729,19 @@ function ResidentCard({
           >
             <MessageSquareText className="size-3.5" />
             Leave a Review
+          </Button>
+        )} */}
+
+        {/* Book button (visible when not hovered) */}
+        {!isOwnProfile && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onBook}
+            className="w-full mt-3 h-8 text-xs border-sky-200 text-sky-700 hover:bg-sky-50 hover:border-sky-300 group-hover:hidden transition-all"
+          >
+            <CalendarCheck className="size-3.5" />
+            Book a Service
           </Button>
         )}
       </div>

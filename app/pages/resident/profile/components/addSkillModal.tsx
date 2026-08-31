@@ -45,6 +45,8 @@ const PRESET_SKILLS = [
 
 const PROFICIENCY_LEVELS = ["Beginner", "Intermediate", "Advanced"];
 
+const AVAILABILITY_OPTIONS = ["available", "busy"];
+
 interface AddSkillModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -52,6 +54,8 @@ interface AddSkillModalProps {
     skill: string;
     experience: number;
     proficiency: string;
+    availability: string;
+    services: string[];
   }) => Promise<void>;
 }
 
@@ -65,6 +69,9 @@ export default function AddSkillModal({
   const [useCustom, setUseCustom] = useState(false);
   const [experience, setExperience] = useState("");
   const [proficiency, setProficiency] = useState("");
+  const [availability, setAvailability] = useState("available");
+  const [services, setServices] = useState<string[]>([]);
+  const [serviceInput, setServiceInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   const resetForm = () => {
@@ -73,6 +80,21 @@ export default function AddSkillModal({
     setUseCustom(false);
     setExperience("");
     setProficiency("");
+    setAvailability("available");
+    setServices([]);
+    setServiceInput("");
+  };
+
+  const addService = () => {
+    const value = serviceInput.trim();
+    if (value && !services.includes(value)) {
+      setServices([...services, value]);
+    }
+    setServiceInput("");
+  };
+
+  const removeService = (service: string) => {
+    setServices(services.filter((s) => s !== service));
   };
 
   const handleSubmit = async () => {
@@ -91,12 +113,18 @@ export default function AddSkillModal({
       return;
     }
 
+    if (services.length === 0) {
+      return;
+    }
+
     setLoading(true);
     try {
       await onAdd({
         skill: skillName,
         experience: exp,
         proficiency,
+        availability,
+        services,
       });
       resetForm();
       onOpenChange(false);
@@ -209,6 +237,78 @@ export default function AddSkillModal({
             </Select>
           </div>
 
+          {/* Availability */}
+          <div className="space-y-1.5">
+            <Label className="text-sm font-medium text-gray-700">
+              Availability
+            </Label>
+            <Select value={availability} onValueChange={setAvailability}>
+              <SelectTrigger className="w-full h-10 border-gray-200 focus:border-sky-400">
+                <SelectValue placeholder="Select availability..." />
+              </SelectTrigger>
+              <SelectContent>
+                {AVAILABILITY_OPTIONS.map((option) => (
+                  <SelectItem key={option} value={option} className="capitalize">
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Services */}
+          <div className="space-y-1.5">
+            <Label
+              htmlFor="service-input"
+              className="text-sm font-medium text-gray-700"
+            >
+              Services Offered
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                id="service-input"
+                placeholder="e.g. House repair, Fence repair"
+                value={serviceInput}
+                onChange={(e) => setServiceInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addService();
+                  }
+                }}
+                className="h-10 border-gray-200 focus:border-sky-400"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addService}
+                disabled={!serviceInput.trim()}
+                className="h-10 shrink-0 border-gray-200 text-gray-600"
+              >
+                Add
+              </Button>
+            </div>
+            {services.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {services.map((service) => (
+                  <span
+                    key={service}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  >
+                    {service}
+                    <button
+                      type="button"
+                      onClick={() => removeService(service)}
+                      className="text-emerald-500 hover:text-emerald-700 transition-colors"
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Validation hints */}
           <div className="space-y-1 text-xs text-gray-400">
             {(useCustom ? !customSkill.trim() : !skill) && (
@@ -218,6 +318,7 @@ export default function AddSkillModal({
               <p>Enter valid years of experience</p>
             )}
             {!proficiency && <p>Select your proficiency level</p>}
+            {services.length === 0 && <p>Add at least one service you offer</p>}
           </div>
         </div>
 
@@ -243,7 +344,8 @@ export default function AddSkillModal({
               !experience ||
               isNaN(Number(experience)) ||
               Number(experience) < 0 ||
-              !proficiency
+              !proficiency ||
+              services.length === 0
             }
             className="h-9 bg-gradient-to-r from-sky-500 to-emerald-500 hover:from-sky-600 hover:to-emerald-600 text-white font-medium shadow-lg shadow-sky-200/50 transition-all disabled:opacity-50"
           >

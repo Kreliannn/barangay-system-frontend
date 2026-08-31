@@ -35,6 +35,18 @@ import {
   CheckCircle2,
   ArrowLeft,
   Send,
+  TreePine,
+  Ruler,
+  UserCheck,
+  Stamp,
+  Coins,
+  GraduationCap,
+  Activity,
+  Wallet,
+  Receipt,
+  Heart,
+  Baby,
+  Cake,
 } from "lucide-react";
 import { getDocumentPrice } from "@/app/utils/documents";
 
@@ -152,6 +164,62 @@ const FIELD_CONFIGS: Record<string, FieldConfig> = {
     placeholder: "e.g. Sari-sari store, Restaurant",
     required: true,
   },
+  sqrmtr: {
+    key: "sqrmtr",
+    label: "Area (Square Meters)",
+    type: "number",
+    placeholder: "e.g. 500",
+    required: true,
+  },
+  Purpose: {
+    key: "Purpose",
+    label: "Purpose",
+    type: "text",
+    placeholder: "e.g. School requirement",
+    required: true,
+  },
+  Activity: {
+    key: "Activity",
+    label: "Activity",
+    type: "text",
+    placeholder: "e.g. OJT / Training / Seminar",
+    required: true,
+  },
+  monthlyIncome: {
+    key: "monthlyIncome",
+    label: "Monthly Income",
+    type: "number",
+    placeholder: "e.g. 15000",
+    required: true,
+  },
+  monthlyExpences: {
+    key: "monthlyExpences",
+    label: "Monthly Expenses",
+    type: "number",
+    placeholder: "e.g. 8000",
+    required: true,
+  },
+  partner: {
+    key: "partner",
+    label: "Spouse / Partner Name",
+    type: "text",
+    placeholder: "e.g. Maria Dela Cruz",
+    required: true,
+  },
+  child: {
+    key: "child",
+    label: "Child Name(s)",
+    type: "text",
+    placeholder: "e.g. Juan Jr., Maria",
+    required: true,
+  },
+  age: {
+    key: "age",
+    label: "Age",
+    type: "number",
+    placeholder: "e.g. 21",
+    required: true,
+  },
 };
 
 // ─── Field icon map ──────────────────────────────────────────────
@@ -171,6 +239,14 @@ const FIELD_ICONS: Record<string, React.ElementType> = {
   businessAddress: MapPin,
   businessType: Building2,
   businessNature: Briefcase,
+  sqrmtr: Ruler,
+  Purpose: Target,
+  Activity: Activity,
+  monthlyIncome: Wallet,
+  monthlyExpences: Receipt,
+  partner: Heart,
+  child: Baby,
+  age: Cake,
 };
 
 // ─── Document icon map ───────────────────────────────────────────
@@ -182,6 +258,11 @@ const DOCUMENT_ICONS: Record<string, React.ElementType> = {
   certificateOfGoodMoralCharacter: BadgeCheck,
   certificateOfUnemployment: ScrollText,
   barangayBusinessClearance: Building2,
+  certificateOfCuttingTrees: TreePine,
+  certificateOfAppearance: UserCheck,
+  certificateOfAttestation: Stamp,
+  certificateOfLowIncome: Coins,
+  certificateOfFirstJobSeeker: GraduationCap,
 };
 
 // ─── Document display names ──────────────────────────────────────
@@ -193,6 +274,11 @@ const DOCUMENT_NAMES: Record<string, string> = {
   certificateOfGoodMoralCharacter: "Certificate of Good Moral Character",
   certificateOfUnemployment: "Certificate of Unemployment",
   barangayBusinessClearance: "Barangay Business Clearance",
+  certificateOfCuttingTrees: "Certificate of Cutting Trees",
+  certificateOfAppearance: "Certificate of Appearance",
+  certificateOfAttestation: "Certificate of Attestation",
+  certificateOfLowIncome: "Certificate of Low Income",
+  certificateOfFirstJobSeeker: "First Time Job Seeker Certificate",
 };
 
 const DOCUMENT_DESCRIPTIONS: Record<string, string> = {
@@ -203,6 +289,11 @@ const DOCUMENT_DESCRIPTIONS: Record<string, string> = {
   certificateOfGoodMoralCharacter: "Character reference for employment or school",
   certificateOfUnemployment: "Certification of current unemployment status",
   barangayBusinessClearance: "Permit for operating a business in the barangay",
+  certificateOfCuttingTrees: "Permit for cutting or trimming trees within the barangay",
+  certificateOfAppearance: "Certification of your appearance for a specific activity or purpose",
+  certificateOfAttestation: "Attestation of your income and financial standing",
+  certificateOfLowIncome: "Certification of low income status for assistance programs",
+  certificateOfFirstJobSeeker: "Certification for first-time job seekers' benefits",
 };
 
 export default function DocumentRequestPage() {
@@ -269,13 +360,23 @@ export default function DocumentRequestPage() {
       businessAddress: null,
       businessType: null,
       businessNature: null,
+      sqrmtr: null,
+      partner: null,
+      child: null,
+      Purpose: null,
+      Activity: null,
+      age: null,
+      monthlyIncome: null,
+      monthlyExpences: null,
     };
+
+    const NUMERIC_FIELDS = ["yrsOfResidency", "sqrmtr", "age", "monthlyIncome", "monthlyExpences"];
 
     // Only include fields that are in the document's field list
     for (const fieldKey of currentDocFields) {
       const value = formData[fieldKey];
       if (value !== undefined && value !== null && value !== "") {
-        if (fieldKey === "yrsOfResidency") {
+        if (NUMERIC_FIELDS.includes(fieldKey)) {
           payload[fieldKey] = Number(value);
         } else {
           payload[fieldKey] = String(value);

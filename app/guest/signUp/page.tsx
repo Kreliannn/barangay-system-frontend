@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axiosInstance from "@/app/utils/axios";
 import { successAlert, errorAlert } from "@/app/utils/alert";
+import { createWorker } from "tesseract.js";
 import {
   Upload,
   Camera,
@@ -27,8 +28,129 @@ import {
   Hash,
   Heart,
   Vote,
+  XCircle,
   
 } from "lucide-react";
+
+
+
+const idKeywords = [
+  // Common personal information
+  "name",
+  "full name",
+  "surname",
+  "first name",
+  "middle name",
+  "given name",
+  "date of birth",
+  "birth date",
+  "dob",
+  "place of birth",
+  "sex",
+  "gender",
+  "address",
+  "residence",
+  "nationality",
+
+  // Identification numbers
+  "id number",
+  "identification number",
+  "id no",
+  "id no.",
+  "card number",
+  "document number",
+  "license number",
+  "license no",
+  "license no.",
+  "registration number",
+  "registration no",
+
+  // Philippine-specific
+  "philippine",
+  "republic of the philippines",
+  "pilipinas",
+  "philid",
+  "national id",
+  "philsys",
+  "psa",
+
+  // Driver's License
+  "driver's license",
+  "drivers license",
+  "driver license",
+  "lto",
+  "land transportation office",
+  "non-professional",
+  "professional",
+
+  // Passport
+  "passport",
+  "passport no",
+  "passport number",
+  "date of issue",
+  "date of expiry",
+  "place of issue",
+
+  // SSS
+  "sss",
+  "social security system",
+  "crn",
+  "common reference number",
+
+  // UMID
+  "umid",
+  "unified multipurpose identification",
+  "crn",
+
+  // PhilHealth
+  "philhealth",
+  "philhealth identification",
+  "pin",
+  "personal identification number",
+
+  // TIN
+  "tin",
+  "tax identification number",
+  "bureau of internal revenue",
+  "bir",
+
+  // PRC
+  "prc",
+  "professional regulation commission",
+  "professional identification card",
+  "license",
+
+  // Postal ID
+  "postal id",
+  "phlpost",
+  "philippine postal corporation",
+
+  // Voter's ID / COMELEC
+  "comelec",
+  "commission on elections",
+  "voter",
+  "voter's",
+  "voter's registration",
+
+  // Senior Citizen ID
+  "senior citizen",
+  "senior citizen identification",
+
+  // Other common fields
+  "date issued",
+  "date of issue",
+  "date of expiry",
+  "expiration date",
+  "expiry date",
+  "valid until",
+  "issued",
+  "expires",
+  "signature",
+  "blood type",
+  "height",
+  "weight",
+  "civil status"
+];
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -59,9 +181,31 @@ export default function SignUpPage() {
   const [idBackPreview, setIdBackPreview] = useState<string | null>(null);
   const [idSelfiePreview, setIdSelfiePreview] = useState<string | null>(null);
 
+  // OCR verification for front of ID
+  const [ocrStatus, setOcrStatus] = useState<
+    "idle" | "scanning" | "accepted" | "rejected"
+  >("idle");
+
   const frontRef = useRef<HTMLInputElement>(null);
   const backRef = useRef<HTMLInputElement>(null);
   const selfieRef = useRef<HTMLInputElement>(null);
+
+  const emailValid = /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email);
+
+  const getPasswordStrength = (pw: string) => {
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
+    if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+    if (/\d/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+    if (pw.length < 8 || score <= 2) return { label: "Weak", level: 1 };
+    if (score <= 4) return { label: "Strong", level: 2 };
+    return { label: "Very Strong", level: 3 };
+  };
+
+  const passwordStrength = getPasswordStrength(password);
 
   const handleFileSelect = (
     file: File,
@@ -90,6 +234,23 @@ export default function SignUpPage() {
     if (ref.current) ref.current.value = "";
   };
 
+  const handleFrontIdSelect = async (file: File) => {
+    handleFileSelect(file, setIdFront, setIdFrontPreview);
+    setOcrStatus("scanning");
+    try {
+      const worker = await createWorker("eng");
+      const { data } = await worker.recognize(file);
+      await worker.terminate();
+
+      const text = (data.text || "").toLowerCase().replace(/\s+/g, " ");
+      const matched =
+        text.length > 0 && idKeywords.some((keyword) => text.includes(keyword));
+      setOcrStatus(matched ? "accepted" : "rejected");
+    } catch {
+      setOcrStatus("rejected");
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -103,14 +264,29 @@ export default function SignUpPage() {
       return;
     }
 
-    if (password.length < 6) {
-      errorAlert("Password must be at least 6 characters");
+    if (!emailValid) {
+      errorAlert("Please enter a valid email address (@gmail.com)");
       return;
     }
 
-
-    if (contact.length != 11) {
+    if (contact.length !== 11) {
       errorAlert("Contact Number invalid");
+      return;
+    }
+
+    if (passwordStrength.level === 1) {
+      errorAlert(
+        "Password is too weak. Use at least 8 characters with uppercase, lowercase, numbers, and special characters."
+      );
+      return;
+    }
+
+    if (ocrStatus !== "accepted") {
+      errorAlert(
+        ocrStatus === "scanning"
+          ? "Please wait while we verify your ID."
+          : "ID verification failed. No valid ID text was detected. Please upload a clearer photo of a valid government-issued ID."
+      );
       return;
     }
 
@@ -135,12 +311,17 @@ export default function SignUpPage() {
       formData.append("idBack", idBack);
       formData.append("idSelfie", idSelfie);
 
+  
+
+    
       await axiosInstance.post("/account", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       successAlert("Registration successful! Please sign in.");
+      
       setTimeout(() => router.push("/guest/signIn"), 1500);
+      
     } catch (err: any) {
       const message =
         err?.response?.data || err?.message || "Registration failed";
@@ -160,6 +341,7 @@ export default function SignUpPage() {
     onSelect,
     onRemove,
     accentColor,
+    badge,
   }: {
     label: string;
     icon: React.ElementType;
@@ -169,6 +351,7 @@ export default function SignUpPage() {
     onSelect: (file: File) => void;
     onRemove: () => void;
     accentColor: string;
+    badge?: React.ReactNode;
   }) => (
     <div className="relative">
       <Label className="text-sm font-medium text-gray-700 mb-1.5 block">
@@ -221,6 +404,7 @@ export default function SignUpPage() {
           </span>
         </button>
       )}
+      {badge}
     </div>
   );
 
@@ -292,10 +476,16 @@ export default function SignUpPage() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="juan@example.com"
+                      placeholder="juandelacruz@gmail.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 h-10 border-gray-200 focus:border-sky-400 focus:ring-sky-400/20 transition-all"
+                      className={`pl-10 h-10 transition-all ${
+                        email
+                          ? emailValid
+                            ? "border-green-500 focus:border-green-500 focus:ring-green-500/20"
+                            : "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                          : "border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
+                      }`}
                       required
                     />
                   </div>
@@ -320,6 +510,8 @@ export default function SignUpPage() {
                         className={`pl-10 h-10 transition-all ${
                             contact.length === 11
                             ? "border-green-500 focus:border-green-500 focus:ring-green-500/20"
+                            : contact.length > 0
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
                             : "border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
                         }`}
                         required
@@ -355,12 +547,20 @@ export default function SignUpPage() {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Min. 6 characters"
+                      placeholder="Min. 8 characters"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 pr-10 h-10 border-gray-200 focus:border-sky-400 focus:ring-sky-400/20 transition-all"
+                      className={`pl-10 pr-10 h-10 transition-all ${
+                        password
+                          ? passwordStrength.level === 1
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                            : passwordStrength.level === 2
+                            ? "border-yellow-500 focus:border-yellow-500 focus:ring-yellow-500/20"
+                            : "border-green-500 focus:border-green-500 focus:ring-green-500/20"
+                          : "border-gray-200 focus:border-sky-400 focus:ring-sky-400/20"
+                      }`}
                       required
-                      minLength={6}
+                      minLength={8}
                     />
                     <button
                       type="button"
@@ -370,6 +570,37 @@ export default function SignUpPage() {
                       {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
                   </div>
+                  {password && (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex gap-1">
+                        {[1, 2, 3].map((i) => (
+                          <div
+                            key={i}
+                            className={`h-1.5 flex-1 rounded-full transition-all ${
+                              passwordStrength.level >= i
+                                ? passwordStrength.level === 1
+                                  ? "bg-red-500"
+                                  : passwordStrength.level === 2
+                                  ? "bg-yellow-500"
+                                  : "bg-green-500"
+                                : "bg-gray-200"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <p
+                        className={`text-xs font-medium ${
+                          passwordStrength.level === 1
+                            ? "text-red-500"
+                            : passwordStrength.level === 2
+                            ? "text-yellow-600"
+                            : "text-green-600"
+                        }`}
+                      >
+                        Password strength: {passwordStrength.label}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -527,9 +758,30 @@ export default function SignUpPage() {
                   file={idFront}
                   preview={idFrontPreview}
                   inputRef={frontRef}
-                  onSelect={(f) => handleFileSelect(f, setIdFront, setIdFrontPreview)}
-                  onRemove={() => removeImage(setIdFront, setIdFrontPreview, frontRef)}
+                  onSelect={(f) => handleFrontIdSelect(f)}
+                  onRemove={() => {
+                    removeImage(setIdFront, setIdFrontPreview, frontRef);
+                    setOcrStatus("idle");
+                  }}
                   accentColor="border-sky-300 hover:border-sky-400 hover:bg-sky-50/50"
+                  badge={
+                    ocrStatus === "scanning" ? (
+                      <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-sky-600">
+                        <Loader2 className="size-3.5 animate-spin" />
+                        Verifying ID...
+                      </div>
+                    ) : ocrStatus === "accepted" ? (
+                      <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-green-600">
+                        <CheckCircle2 className="size-3.5" />
+                        ID Accepted
+                      </div>
+                    ) : ocrStatus === "rejected" ? (
+                      <div className="mt-2 flex items-center gap-1.5 text-xs font-medium text-red-500">
+                        <XCircle className="size-3.5" />
+                        ID Rejected - no valid ID text detected
+                      </div>
+                    ) : null
+                  }
                 />
                 <UploadBox
                   label="Back of ID"

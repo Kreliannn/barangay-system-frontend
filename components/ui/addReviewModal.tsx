@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Star, MessageSquareText, X } from "lucide-react";
+import { Loader2, Star, MessageSquareText, Briefcase, X } from "lucide-react";
 
 interface SkillItem {
   _id: string;
@@ -31,7 +31,8 @@ interface AddReviewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   residentName: string;
-  residentSkills: SkillItem[];
+  residentSkills?: SkillItem[];
+  skillValue?: string;
   onAdd: (review: {
     star: number;
     skill: string;
@@ -44,6 +45,7 @@ export default function AddReviewModal({
   onOpenChange,
   residentName,
   residentSkills,
+  skillValue,
   onAdd,
 }: AddReviewModalProps) {
   const [star, setStar] = useState(0);
@@ -51,6 +53,8 @@ export default function AddReviewModal({
   const [skill, setSkill] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const finalSkill = skillValue || skill;
 
   const resetForm = () => {
     setStar(0);
@@ -60,11 +64,11 @@ export default function AddReviewModal({
   };
 
   const handleSubmit = async () => {
-    if (star === 0 || !skill || !message.trim()) return;
+    if (star === 0 || !finalSkill || !message.trim()) return;
 
     setLoading(true);
     try {
-      await onAdd({ star, skill, message: message.trim() });
+      await onAdd({ star, skill: finalSkill, message: message.trim() });
       resetForm();
       onOpenChange(false);
     } catch {
@@ -143,23 +147,30 @@ export default function AddReviewModal({
             </div>
           </div>
 
-          {/* Skill Selection */}
+          {/* Skill Being Reviewed */}
           <div className="space-y-1.5">
             <Label className="text-sm font-medium text-gray-700">
               Skill Being Reviewed
             </Label>
-            <Select value={skill} onValueChange={setSkill}>
-              <SelectTrigger className="w-full h-10 border-gray-200 focus:border-amber-400">
-                <SelectValue placeholder="Select a skill..." />
-              </SelectTrigger>
-              <SelectContent className="max-h-60">
-                {residentSkills.map((s) => (
-                  <SelectItem key={s._id} value={s.skill}>
-                    {s.skill}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {skillValue ? (
+              <div className="w-full h-10 px-3 rounded-lg border border-gray-200 bg-gray-50 flex items-center gap-2 text-sm text-gray-800">
+                <Briefcase className="size-4 text-gray-400 shrink-0" />
+                <span className="truncate">{skillValue}</span>
+              </div>
+            ) : (
+              <Select value={skill} onValueChange={setSkill}>
+                <SelectTrigger className="w-full h-10 border-gray-200 focus:border-amber-400">
+                  <SelectValue placeholder="Select a skill..." />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {(residentSkills || []).map((s) => (
+                    <SelectItem key={s._id} value={s.skill}>
+                      {s.skill}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           {/* Message */}
@@ -182,7 +193,7 @@ export default function AddReviewModal({
           {/* Validation hints */}
           <div className="space-y-1 text-xs text-gray-400">
             {star === 0 && <p>Select a star rating</p>}
-            {!skill && <p>Select which skill you are reviewing</p>}
+            {!finalSkill && <p>Select which skill you are reviewing</p>}
             {!message.trim() && (
               <p>Write a brief feedback message</p>
             )}
@@ -205,7 +216,7 @@ export default function AddReviewModal({
           <Button
             type="button"
             onClick={handleSubmit}
-            disabled={loading || star === 0 || !skill || !message.trim()}
+            disabled={loading || star === 0 || !finalSkill || !message.trim()}
             className="h-9 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-medium shadow-lg shadow-amber-200/50 transition-all disabled:opacity-50"
           >
             {loading ? (
